@@ -350,6 +350,83 @@ export default function Admin() {
           </Card>
         </TabsContent>
         
+        <TabsContent value="pages">
+          <Card>
+            <CardHeader>
+              <CardTitle>Edit Pages</CardTitle>
+              <CardDescription>
+                Customize your static page content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {pageContentLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-full mb-2" />
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-36 w-full" />
+                </div>
+              ) : (
+                <Form {...pageContentForm}>
+                  <form onSubmit={pageContentForm.handleSubmit(onPageContentSubmit)} className="space-y-6">
+                    <FormField
+                      control={pageContentForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Page Title</FormLabel>
+                          <FormDescription>
+                            The title that appears at the top of the About page
+                          </FormDescription>
+                          <FormControl>
+                            <Input 
+                              placeholder="About The Quiet Seed" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={pageContentForm.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Page Content</FormLabel>
+                          <FormDescription>
+                            The main content of the About page (supports HTML formatting)
+                          </FormDescription>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Enter your page content" 
+                              {...field} 
+                              className="min-h-[300px] font-mono text-sm"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">
+                        Last updated: {aboutPageContent ? new Date(aboutPageContent.lastUpdated).toLocaleString() : "Never"}
+                      </p>
+                      <Button 
+                        type="submit" 
+                        disabled={updatePageContent.isPending || !pageContentForm.formState.isDirty}
+                      >
+                        {updatePageContent.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
         <TabsContent value="settings">
           <Card>
             <CardHeader>
