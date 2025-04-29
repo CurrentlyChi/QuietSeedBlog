@@ -1,1 +1,0 @@
-Investigating header display issue - the buttons in the desktop header aren't visible to the user but mobile menu is working correctly.
