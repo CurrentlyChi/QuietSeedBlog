@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useCategoryOptions } from "@/hooks/use-categories";
+// Category selection has been removed
 import { ArrowLeft, Loader2, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -56,7 +56,6 @@ const EditPost = () => {
   const postId = match ? parseInt(params.id, 10) : null;
   const [_, navigate] = useLocation();
   const { toast } = useToast();
-  const categoryOptions = useCategoryOptions();
 
   // Get current date in YYYY-MM-DD format
   const today = new Date();
@@ -229,31 +228,16 @@ const EditPost = () => {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Category ID is set to default value and hidden */}
                 <FormField
                   control={form.control}
                   name="categoryId"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value, 10))} 
-                        defaultValue={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categoryOptions.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
+                    <FormItem className="hidden">
+                      <FormControl>
+                        <Input type="hidden" {...field} />
+                      </FormControl>
                     </FormItem>
                   )}
                 />

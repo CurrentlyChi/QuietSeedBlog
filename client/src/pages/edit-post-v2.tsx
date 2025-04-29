@@ -6,7 +6,7 @@ import { useRoute } from "wouter";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useCategories } from "@/hooks/use-categories";
+// Category selection has been removed
 import { useToast } from "@/hooks/use-toast";
 import RichTextEditor from "@/components/ui/rich-text-editor";
 import { Button } from "@/components/ui/button";
@@ -47,16 +47,7 @@ const EditPost = () => {
   const postId = match ? parseInt(params.id, 10) : null;
   const [_, navigate] = useLocation();
   const { toast } = useToast();
-  // Use the categories from API
-  const categories = useCategories();
-  
-  // Create options for select dropdown
-  const categoryOptions = useMemo(() => {
-    return categories.map((category) => ({
-      label: category.name,
-      value: category.id.toString()
-    }));
-  }, [categories]);
+  // Categories are not used anymore, fixed to default
 
   // Get current date in YYYY-MM-DD format
   const today = new Date();
@@ -223,31 +214,16 @@ const EditPost = () => {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Category ID is set to default value and hidden */}
                 <FormField
                   control={form.control}
                   name="categoryId"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value, 10))} 
-                        defaultValue={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categoryOptions.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
+                    <FormItem className="hidden">
+                      <FormControl>
+                        <Input type="hidden" {...field} />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
