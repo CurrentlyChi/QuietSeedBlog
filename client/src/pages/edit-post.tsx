@@ -46,18 +46,11 @@ const formSchema = insertPostSchema.extend({
     },
     z.boolean()
   ),
-  // Override publishedAt to ensure it's always a Date object
-  publishedAt: z.preprocess(
-    (val) => {
-      if (typeof val === 'string') {
-        // Make sure we have a valid date string
-        const date = new Date(val);
-        return isNaN(date.getTime()) ? new Date() : date;
-      }
-      return val instanceof Date ? val : new Date();
-    },
+  // Accept either a string (ISO format) or a Date object for publishedAt
+  publishedAt: z.union([
+    z.string().transform(val => new Date(val)),
     z.date()
-  ),
+  ])
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -147,15 +140,25 @@ const EditPost = () => {
   });
 
   const onSubmit = (values: FormValues) => {
+    // Ensure publishedAt is always a Date object
+    const processedValues = {
+      ...values,
+      publishedAt: values.publishedAt instanceof Date 
+        ? values.publishedAt 
+        : new Date(values.publishedAt || new Date()),
+      featured: !!values.featured // Ensure boolean
+    };
+    
     // Log the values to help with debugging
-    console.log("Form values before submission:", values);
-    console.log("publishedAt type:", typeof values.publishedAt);
+    console.log("Form values before submission:", processedValues);
+    console.log("publishedAt type:", typeof processedValues.publishedAt);
+    console.log("publishedAt is date?", processedValues.publishedAt instanceof Date);
     
     try {
       if (isEditMode && postId) {
-        updatePostMutation.mutate(values);
+        updatePostMutation.mutate(processedValues);
       } else {
-        createPostMutation.mutate(values);
+        createPostMutation.mutate(processedValues);
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -259,33 +262,25 @@ const EditPost = () => {
                   control={form.control}
                   name="publishedAt"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                       <FormLabel>Publish Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "yyyy-MM-dd")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <FormControl>
+                        <Input 
+                          type="datetime-local" 
+                          value={field.value instanceof Date 
+                            ? field.value.toISOString().slice(0, 16) 
+                            : typeof field.value === 'string' 
+                              ? new Date(field.value).toISOString().slice(0, 16)
+                              : new Date().toISOString().slice(0, 16)}
+                          onChange={(e) => {
+                            const date = new Date(e.target.value);
+                            field.onChange(date);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Select the publish date and time
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
