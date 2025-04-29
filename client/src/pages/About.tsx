@@ -1,4 +1,4 @@
-import Newsletter from "@/components/home/Newsletter";
+
 import fruitArtwork from "@/assets/fruit-art.svg";
 import { usePageContent } from "@/lib/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,8 +42,6 @@ export default function About() {
           </>
         )}
       </section>
-      
-      <Newsletter />
     </div>
   );
 }
