@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
-import { type User, type Category, type Post, type PostWithDetails } from "@shared/schema";
+import { type User, type Category, type Post, type PostWithDetails, type SiteSettings } from "@shared/schema";
 
 // Define return types for our query hooks
 type QueryResult<T> = {
@@ -120,4 +120,35 @@ export function useMobileMenu() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   
   return { isMobileMenuOpen, openMobileMenu, closeMobileMenu };
+}
+
+// Custom hook for getting site settings
+export function useSiteSettings(): QueryResult<SiteSettings> {
+  const { data, isLoading, error } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"]
+  });
+  
+  return { data, isLoading, error: error as Error | null };
+}
+
+// Custom hook for updating site settings
+export function useUpdateSiteSettings() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (settings: Partial<SiteSettings>) => {
+      const response = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings)
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update settings");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+    }
+  });
 }
