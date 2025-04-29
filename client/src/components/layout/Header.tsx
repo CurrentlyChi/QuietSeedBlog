@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
+  // Added at 4:05 AM to fix visibility issues
   const { toast } = useToast();
   const [location, navigate] = useLocation();
   const { data: userData, refetch } = useCurrentUser();
