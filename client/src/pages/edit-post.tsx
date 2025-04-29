@@ -258,7 +258,7 @@ const EditPost = () => {
                               className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(new Date(field.value), "yyyy-MM-dd")
                               ) : (
                                 <span>Pick a date</span>
                               )}
