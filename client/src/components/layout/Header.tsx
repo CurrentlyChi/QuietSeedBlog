@@ -83,6 +83,12 @@ export default function Header() {
             Home
           </Link>
           <Link 
+            href="/" 
+            className={`nav-link text-primary hover:text-primary-foreground transition-colors`}
+          >
+            Blog
+          </Link>
+          <Link 
             href="/about" 
             className={`nav-link ${isActive("/about") ? "active text-primary-foreground font-medium" : "text-primary hover:text-primary-foreground transition-colors"}`}
           >
@@ -91,7 +97,7 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="text-primary hover:text-primary-foreground transition-colors"
+            className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary-foreground transition-colors flex items-center p-2 rounded-full"
             aria-label="Search"
           >
             <SearchIcon className="h-5 w-5" />
@@ -154,6 +160,12 @@ export default function Header() {
             Home
           </Link>
           <Link 
+            href="/" 
+            className="text-primary pb-2 border-b border-muted"
+          >
+            Blog
+          </Link>
+          <Link 
             href="/about" 
             className={`${isActive("/about") ? "text-primary-foreground font-medium" : "text-primary"} pb-2 border-b border-muted`}
           >
@@ -162,10 +174,10 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="flex items-center space-x-2 text-primary pb-2 border-b border-muted w-full"
+            className="flex items-center space-x-2 bg-primary/10 hover:bg-primary/20 text-primary p-3 rounded-md w-full transition-colors"
           >
             <SearchIcon className="h-4 w-4" />
-            <span>Search...</span>
+            <span>Search posts...</span>
           </button>
           
           {userData?.isAuthenticated ? (
