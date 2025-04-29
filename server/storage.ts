@@ -179,12 +179,32 @@ export class MemStorage implements IStorage {
 
   async createPost(post: InsertPost): Promise<Post> {
     const id = this.postId++;
+    
+    // Ensure proper types for all fields
     const newPost: Post = {
-      ...post,
       id,
+      title: post.title,
+      slug: post.slug,
+      content: post.content,
+      excerpt: post.excerpt,
+      imageUrl: post.imageUrl || null,
+      publishedAt: post.publishedAt instanceof Date 
+        ? post.publishedAt 
+        : typeof post.publishedAt === 'string' 
+          ? new Date(post.publishedAt) 
+          : new Date(),
+      categoryId: typeof post.categoryId === 'number' ? post.categoryId : 1,
+      authorId: typeof post.authorId === 'number' ? post.authorId : 1,
+      featured: typeof post.featured === 'boolean' 
+        ? post.featured 
+        : post.featured === 'true' 
+          ? true 
+          : false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
+    
+    console.log("Creating post with data:", newPost);
     this.posts.set(id, newPost);
     return newPost;
   }
@@ -193,11 +213,53 @@ export class MemStorage implements IStorage {
     const existingPost = this.posts.get(id);
     if (!existingPost) return undefined;
 
+    // Process fields to ensure correct types
+    const processed: Partial<Post> = {};
+    
+    if (updatedFields.title !== undefined) processed.title = updatedFields.title;
+    if (updatedFields.slug !== undefined) processed.slug = updatedFields.slug;
+    if (updatedFields.content !== undefined) processed.content = updatedFields.content;
+    if (updatedFields.excerpt !== undefined) processed.excerpt = updatedFields.excerpt;
+    if (updatedFields.imageUrl !== undefined) processed.imageUrl = updatedFields.imageUrl || null;
+    
+    // Handle date conversion
+    if (updatedFields.publishedAt !== undefined) {
+      processed.publishedAt = updatedFields.publishedAt instanceof Date 
+        ? updatedFields.publishedAt 
+        : typeof updatedFields.publishedAt === 'string' 
+          ? new Date(updatedFields.publishedAt) 
+          : existingPost.publishedAt;
+    }
+    
+    // Handle IDs
+    if (updatedFields.categoryId !== undefined) {
+      processed.categoryId = typeof updatedFields.categoryId === 'number' 
+        ? updatedFields.categoryId 
+        : parseInt(updatedFields.categoryId as any, 10) || existingPost.categoryId;
+    }
+    
+    if (updatedFields.authorId !== undefined) {
+      processed.authorId = typeof updatedFields.authorId === 'number' 
+        ? updatedFields.authorId 
+        : parseInt(updatedFields.authorId as any, 10) || existingPost.authorId;
+    }
+    
+    // Handle boolean conversion
+    if (updatedFields.featured !== undefined) {
+      processed.featured = typeof updatedFields.featured === 'boolean' 
+        ? updatedFields.featured 
+        : updatedFields.featured === 'true' 
+          ? true 
+          : false;
+    }
+
     const updatedPost: Post = {
       ...existingPost,
-      ...updatedFields,
+      ...processed,
       updatedAt: new Date()
     };
+    
+    console.log("Updating post with data:", updatedPost);
     this.posts.set(id, updatedPost);
     return updatedPost;
   }

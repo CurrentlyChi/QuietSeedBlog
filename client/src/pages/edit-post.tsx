@@ -71,7 +71,7 @@ const EditPost = () => {
       publishedAt: new Date(),
       categoryId: 1, // Reflection category
       authorId: 1, // Admin user
-      featured: "false",
+      featured: "false", // Will transform to boolean via the formSchema transform
     },
   });
 
@@ -136,10 +136,23 @@ const EditPost = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    if (isEditMode && postId) {
-      updatePostMutation.mutate(values);
-    } else {
-      createPostMutation.mutate(values);
+    // Log the values to help with debugging
+    console.log("Form values before submission:", values);
+    console.log("publishedAt type:", typeof values.publishedAt);
+    
+    try {
+      if (isEditMode && postId) {
+        updatePostMutation.mutate(values);
+      } else {
+        createPostMutation.mutate(values);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Error",
+        description: `Submission error: ${error}`,
+        variant: "destructive",
+      });
     }
   };
 
