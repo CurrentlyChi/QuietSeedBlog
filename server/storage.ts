@@ -602,48 +602,78 @@ export class DatabaseStorage implements IStorage {
   
   // Page content methods
   async getPageContent(id: string): Promise<PageContent | undefined> {
-    const [content] = await db.select().from(pageContents).where(eq(pageContents.id, id));
-    
-    if (content) {
-      return content;
+    try {
+      console.log(`Fetching page content for id: ${id}`);
+      const results = await db.select().from(pageContents).where(eq(pageContents.id, id));
+      console.log(`Page content query results:`, results);
+      
+      if (results && results.length > 0) {
+        console.log(`Found existing page content for ${id}`);
+        return results[0];
+      }
+      
+      // If it's the about page and it doesn't exist, create it with default content
+      if (id === 'about') {
+        console.log(`About page doesn't exist, creating with default content`);
+        // Create with the full default content
+        const newContent = await this.updatePageContent('about', {
+          ...defaultAboutPageContent,
+          id: 'about'
+        });
+        
+        console.log(`Created default about page content:`, newContent);
+        return newContent;
+      }
+      
+      console.log(`No page content found for ${id} and no default provided`);
+      return undefined;
+    } catch (error) {
+      console.error(`Error fetching page content for ${id}:`, error);
+      throw error;
     }
-    
-    // If it's the about page and it doesn't exist, create it with default content
-    if (id === 'about') {
-      return this.updatePageContent('about', defaultAboutPageContent);
-    }
-    
-    return undefined;
   }
   
   async updatePageContent(id: string, content: Partial<InsertPageContent>): Promise<PageContent> {
-    // Try to get existing content first
-    const existingContent = await this.getPageContent(id);
-    
-    if (existingContent) {
-      // Update existing content
-      const [updatedContent] = await db
-        .update(pageContents)
-        .set({
-          ...content,
-          lastUpdated: new Date()
-        })
-        .where(eq(pageContents.id, id))
-        .returning();
+    try {
+      console.log(`Updating page content for id: ${id}`, content);
       
-      return updatedContent;
-    } else {
-      // Insert new content
-      const [newContent] = await db
-        .insert(pageContents)
-        .values({
-          id,
-          title: content.title || id.charAt(0).toUpperCase() + id.slice(1),
-          content: content.content || '',
-        })
-        .returning();
+      // Check if content already exists but avoid infinite recursion
+      const results = await db.select().from(pageContents).where(eq(pageContents.id, id));
+      const existingContent = results && results.length > 0 ? results[0] : null;
       
-      return newContent;
+      if (existingContent) {
+        console.log(`Existing page content found, updating...`);
+        // Update existing content
+        const [updatedContent] = await db
+          .update(pageContents)
+          .set({
+            ...content,
+            lastUpdated: new Date()
+          })
+          .where(eq(pageContents.id, id))
+          .returning();
+        
+        console.log(`Updated page content successfully:`, updatedContent);
+        return updatedContent;
+      } else {
+        console.log(`No existing page content, inserting new content...`);
+        // Insert new content
+        const [newContent] = await db
+          .insert(pageContents)
+          .values({
+            id,
+            title: content.title || id.charAt(0).toUpperCase() + id.slice(1),
+            content: content.content || '',
+            lastUpdated: new Date()
+          })
+          .returning();
+        
+        console.log(`Inserted new page content successfully:`, newContent);
+        return newContent;
+      }
+    } catch (error) {
+      console.error(`Error updating page content for ${id}:`, error);
+      throw error;
     }
   }
   

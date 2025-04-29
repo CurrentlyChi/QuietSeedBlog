@@ -1,7 +1,9 @@
 
+import { useEffect, useState } from "react";
 import fruitArtwork from "@/assets/fruit-art.svg";
 import { usePageContent } from "@/lib/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
+import { defaultAboutPageContent } from "@shared/schema";
 
 export default function About() {
   const { data: pageContent, isLoading, error } = usePageContent("about");

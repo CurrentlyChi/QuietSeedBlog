@@ -197,12 +197,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/pages/:id", async (req: Request, res: Response) => {
     try {
       const pageId = req.params.id;
+      console.log(`Received request for page content: ${pageId}`);
+      
       const pageContent = await storage.getPageContent(pageId);
+      console.log(`Retrieved page content for ${pageId}:`, pageContent ? "Found" : "Not found");
       
       if (!pageContent) {
+        console.log(`No page content found for '${pageId}'`);
         return res.status(404).json({ message: `Page content for '${pageId}' not found` });
       }
       
+      console.log(`Returning page content for ${pageId}`);
       return res.json(pageContent);
     } catch (error) {
       console.error("Error fetching page content:", error);
