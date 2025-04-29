@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import { usePosts, usePostsByCategory, useSearchPosts } from "@/lib/hooks";
 import FeaturedPost from "@/components/home/FeaturedPost";
-import CategoryFilter from "@/components/home/CategoryFilter";
 import BlogPostCard from "@/components/home/BlogPostCard";
 import Newsletter from "@/components/home/Newsletter";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import SearchBar from "@/components/search-bar";
 
 export default function Home() {
   const [location] = useLocation();
@@ -106,8 +104,6 @@ export default function Home() {
       {!searchQuery && (
         <>
           <FeaturedPost />
-          <SearchBar className="my-12 max-w-4xl mx-auto" />
-          <CategoryFilter />
         </>
       )}
       

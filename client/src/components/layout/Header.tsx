@@ -89,18 +89,37 @@ export default function Header() {
             About
           </Link>
           
-          <div className="relative">
-            <form onSubmit={handleSearch}>
-              <Input 
-                type="text" 
-                placeholder="Search..." 
-                className="pl-10 pr-4 py-2 rounded-full bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm w-40 transition-all focus:w-56"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <SearchIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            </form>
-          </div>
+          <button 
+            onClick={openSearch} 
+            className="text-primary hover:text-primary-foreground transition-colors"
+            aria-label="Search"
+          >
+            <SearchIcon className="h-5 w-5" />
+          </button>
+          
+          {isSearchOpen && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Search</h2>
+                  <button onClick={closeSearch} className="text-gray-500 hover:text-gray-700">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <form onSubmit={handleSearch} className="relative">
+                  <Input 
+                    type="text" 
+                    placeholder="Search..." 
+                    className="pl-10 pr-4 py-3 w-full"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                  <SearchIcon className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
+                </form>
+              </div>
+            </div>
+          )}
           
           {userData?.isAuthenticated ? (
             <>
@@ -141,16 +160,13 @@ export default function Header() {
             About
           </Link>
           
-          <form onSubmit={handleSearch} className="relative">
-            <Input 
-              type="text" 
-              placeholder="Search..." 
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <SearchIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          </form>
+          <button 
+            onClick={openSearch} 
+            className="flex items-center space-x-2 text-primary pb-2 border-b border-muted w-full"
+          >
+            <SearchIcon className="h-4 w-4" />
+            <span>Search...</span>
+          </button>
           
           {userData?.isAuthenticated ? (
             <div className="flex flex-col space-y-2">
