@@ -77,3 +77,12 @@ export type PostWithDetails = Post & {
 };
 
 export type Login = z.infer<typeof loginSchema>;
+
+// Site settings schema
+export interface SiteSettings {
+  tagline: string;
+}
+
+export const defaultSiteSettings: SiteSettings = {
+  tagline: "A personal space for mindful reflections and thoughtful stories about slow living."
+};

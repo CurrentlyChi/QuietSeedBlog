@@ -145,6 +145,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Failed to fetch categories" });
     }
   });
+  
+  // Get site settings
+  app.get("/api/settings", async (_req: Request, res: Response) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      return res.json(settings);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch site settings" });
+    }
+  });
+  
+  // Update site settings
+  app.put("/api/settings", async (req: Request, res: Response) => {
+    try {
+      const updatedSettings = await storage.updateSiteSettings(req.body);
+      return res.json(updatedSettings);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to update site settings" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

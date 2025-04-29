@@ -2,7 +2,9 @@ import {
   type User, type InsertUser, 
   type Category, type InsertCategory, 
   type Post, type InsertPost, 
-  type PostWithDetails 
+  type PostWithDetails,
+  type SiteSettings,
+  defaultSiteSettings
 } from "@shared/schema";
 
 export interface IStorage {
@@ -28,12 +30,17 @@ export interface IStorage {
   updatePost(id: number, post: Partial<InsertPost>): Promise<Post | undefined>;
   deletePost(id: number): Promise<boolean>;
   searchPosts(query: string): Promise<Post[]>;
+  
+  // Site settings methods
+  getSiteSettings(): Promise<SiteSettings>;
+  updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private categories: Map<number, Category>;
   private posts: Map<number, Post>;
+  private siteSettings: SiteSettings;
   
   private userId: number;
   private categoryId: number;
@@ -43,12 +50,26 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.categories = new Map();
     this.posts = new Map();
+    this.siteSettings = { ...defaultSiteSettings };
     
     this.userId = 1;
     this.categoryId = 1;
     this.postId = 1;
     
     this.seedData();
+  }
+  
+  // Site settings methods
+  async getSiteSettings(): Promise<SiteSettings> {
+    return { ...this.siteSettings };
+  }
+  
+  async updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
+    this.siteSettings = {
+      ...this.siteSettings,
+      ...settings
+    };
+    return { ...this.siteSettings };
   }
 
   // User methods
