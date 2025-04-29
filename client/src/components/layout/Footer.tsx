@@ -29,22 +29,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/category/reflection" className="text-muted-foreground hover:text-primary transition-colors">
-                  Reflection
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/how-to" className="text-muted-foreground hover:text-primary transition-colors">
-                  How-To
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/story" className="text-muted-foreground hover:text-primary transition-colors">
-                  Story
-                </Link>
-              </li>
-
-              <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About
                 </Link>
