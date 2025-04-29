@@ -197,9 +197,9 @@ export class MemStorage implements IStorage {
       
       // Create author
       const authorUser: InsertUser = {
-        username: "olivia",
+        username: "maichi",
         password: "password123",
-        name: "Olivia Gardens",
+        name: "Mai Chi",
         isAdmin: false
       };
       const author = await this.createUser(authorUser);
