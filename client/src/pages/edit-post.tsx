@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPostSchema } from "@shared/schema";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -317,16 +318,18 @@ const EditPost = () => {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Content (HTML)</FormLabel>
+                    <FormLabel>Content</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Enter post content in HTML format" 
-                        className="min-h-[300px] font-mono text-sm"
-                        {...field} 
-                      />
+                      <div className="rich-editor-wrapper border rounded-md overflow-hidden">
+                        <RichTextEditor 
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder="Write your post content here..."
+                        />
+                      </div>
                     </FormControl>
                     <FormDescription>
-                      Enter the full content of your post in HTML format
+                      Format your content using the toolbar above
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
