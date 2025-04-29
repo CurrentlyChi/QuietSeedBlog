@@ -27,9 +27,9 @@ export default function Newsletter() {
     <section className="my-16 py-12 px-6 bg-secondary rounded-2xl">
       <div className="max-w-3xl mx-auto text-center">
         <i className="ri-mail-open-line text-3xl text-primary mb-2"></i>
-        <h2 className="font-serif text-2xl md:text-3xl text-primary-foreground mb-4">Join the Quiet Community</h2>
+        <h2 className="font-serif text-2xl md:text-3xl text-primary-foreground mb-4">Newsletter</h2>
         <p className="text-foreground mb-6">
-          Subscribe to receive thoughtful articles, gentle guides, and mindfulness reminders directly to your inbox.
+          Subscribe to receive updates and new content directly to your inbox.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
           <Input 

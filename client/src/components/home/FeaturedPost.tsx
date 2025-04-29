@@ -27,11 +27,6 @@ export default function FeaturedPost() {
               {settings && settings.tagline ? settings.tagline : "A personal space for mindful reflections and thoughtful stories about slow living in a fast-paced world."}
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button asChild size="lg" className="bg-purple-700 hover:bg-purple-800 text-white shadow-md">
-                <Link href={writePostLink}>
-                  Write a Post
-                </Link>
-              </Button>
               <Button variant="outline" asChild size="lg" className="border-purple-700 text-purple-800 hover:bg-purple-100">
                 <Link href="/about">
                   About This Blog

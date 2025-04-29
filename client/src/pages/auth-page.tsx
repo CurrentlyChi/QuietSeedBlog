@@ -112,9 +112,8 @@ export default function AuthPage() {
               <p className="text-muted-foreground">Sign in to continue to the admin area</p>
             </div>
             
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsList className="grid w-full grid-cols-1 mb-8">
               <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -164,14 +163,7 @@ export default function AuthPage() {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                   <p className="text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Button 
-                      variant="link" 
-                      className="p-0" 
-                      onClick={() => setActiveTab("register")}
-                    >
-                      Register
-                    </Button>
+                    Administrator access only
                   </p>
                 </CardFooter>
               </Card>
