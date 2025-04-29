@@ -58,7 +58,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2 animate-fade-in">
           <i className="ri-seedling-line text-2xl text-primary"></i>
-          <h1 className="text-xl font-serif font-medium text-primary-foreground">The Quiet Seed</h1>
+          <h1 className="text-2xl font-handwritten text-primary-foreground">The Quiet Seed</h1>
         </Link>
         
         {/* Mobile menu button */}

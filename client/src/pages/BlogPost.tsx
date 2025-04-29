@@ -55,10 +55,10 @@ export default function BlogPost() {
           </div>
           
           <Link 
-            href={`/category/${post.category.slug}`}
+            href={`/category/${post.categorySlug}`}
             className="inline-block px-3 py-1 bg-primary/80 text-white rounded-full text-xs mb-3"
           >
-            {post.category.name}
+            {post.categoryName}
           </Link>
           
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
@@ -67,10 +67,10 @@ export default function BlogPost() {
           
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-primary/20 overflow-hidden flex items-center justify-center">
-              <span className="text-primary-foreground">{post.author.username.charAt(0)}</span>
+              <span className="text-primary-foreground">{post.authorName.charAt(0)}</span>
             </div>
             <div>
-              <p className="font-medium text-foreground">{post.author.username}</p>
+              <p className="font-medium text-foreground">{post.authorName}</p>
               <p className="text-sm text-muted-foreground">
                 {formatDate(post.publishedAt)} · {getReadingTime(post.content)}
               </p>
@@ -91,8 +91,8 @@ export default function BlogPost() {
           <Link href="/" className="text-primary hover:text-primary-foreground transition-colors">
             ← Back to Home
           </Link>
-          <Link href={`/category/${post.category.slug}`} className="text-primary hover:text-primary-foreground transition-colors">
-            More in {post.category.name} →
+          <Link href={`/category/${post.categorySlug}`} className="text-primary hover:text-primary-foreground transition-colors">
+            More in {post.categoryName} →
           </Link>
         </div>
       </div>

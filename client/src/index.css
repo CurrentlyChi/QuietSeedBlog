@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,6 +66,10 @@
 }
 
 @layer components {
+  .font-handwritten {
+    font-family: 'Dancing Script', cursive;
+  }
+  
   .nav-link {
     @apply relative inline-flex items-center px-1 pt-1 text-sm font-medium;
   }
