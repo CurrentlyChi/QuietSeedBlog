@@ -11,6 +11,9 @@ export default function Home() {
   const [, params] = useRoute("/category/:slug");
   const [, searchParams] = useRoute("/search");
   
+  // Check if we're on the blog route
+  const isBlogRoute = location === "/blog";
+  
   const categorySlug = params?.slug;
   const searchQuery = searchParams ? new URLSearchParams(window.location.search).get("q") || "" : "";
   
@@ -24,8 +27,8 @@ export default function Home() {
   
   let posts = allPosts;
   let isLoading = allPostsLoading;
-  let title = "Recent Posts";
-  let basePath = "";
+  let title = isBlogRoute ? "All Posts" : "Recent Posts";
+  let basePath = isBlogRoute ? "/blog" : "";
   
   if (categorySlug) {
     posts = categoryPosts;
@@ -96,7 +99,8 @@ export default function Home() {
   
   return (
     <div className="animate-fade-in">
-      {!searchQuery && (
+      {/* Show welcome banner and featured post only on home page, not on blog or search */}
+      {!searchQuery && !isBlogRoute && !categorySlug && (
         <>
           <FeaturedPost />
         </>
