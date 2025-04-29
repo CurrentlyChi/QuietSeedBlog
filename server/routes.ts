@@ -59,10 +59,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create new post
   app.post("/api/posts", async (req: Request, res: Response) => {
     try {
+      console.log("Received post creation request with data:", req.body);
       const validatedData = insertPostSchema.parse(req.body);
+      console.log("Validated post data:", validatedData);
+      
+      // Make sure we have a valid categoryId - default to 4 if not present or invalid
+      if (!validatedData.categoryId || validatedData.categoryId === 1) {
+        console.log("Setting default categoryId to 4 (Mindfulness)");
+        validatedData.categoryId = 4;
+      }
+      
       const post = await storage.createPost(validatedData);
+      console.log("Created new post:", post);
       return res.status(201).json(post);
     } catch (error) {
+      console.error("Error creating post:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid post data", errors: error.errors });
       }
