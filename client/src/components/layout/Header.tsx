@@ -79,29 +79,29 @@ export default function Header() {
         <nav className="hidden md:flex items-center space-x-5 ml-auto animate-fade-in">
           <Link 
             href="/" 
-            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-xs font-medium"
           >
             HOME
           </Link>
           <Link 
             href="/" 
-            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-xs font-medium"
           >
             BLOG
           </Link>
           <Link 
             href="/about" 
-            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-xs font-medium"
           >
             ABOUT
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="text-white hover:text-yellow-200 transition-colors flex items-center text-sm font-semibold"
+            className="text-white hover:text-yellow-200 transition-colors flex items-center text-xs font-medium"
             aria-label="Search"
           >
-            <SearchIcon className="h-4 w-4 mr-1" />
+            <SearchIcon className="h-3 w-3 mr-1" />
             <span>SEARCH</span>
           </button>
           
@@ -132,19 +132,19 @@ export default function Header() {
           {userData?.isAuthenticated ? (
             <>
               {userData.user.isAdmin && (
-                <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold">
+                <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-xs font-medium">
                   ADMIN
                 </Link>
               )}
               <button 
-                className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold" 
+                className="text-white hover:text-yellow-200 transition-colors text-xs font-medium" 
                 onClick={handleLogout}
               >
                 LOGOUT
               </button>
             </>
           ) : (
-            <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold">
+            <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-xs font-medium">
               LOGIN
             </Link>
           )}
@@ -156,47 +156,47 @@ export default function Header() {
         <div className="container mx-auto px-4 flex flex-col space-y-4">
           <Link 
             href="/" 
-            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
+            className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center"
           >
             HOME
           </Link>
           <Link 
             href="/" 
-            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
+            className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center"
           >
             BLOG
           </Link>
           <Link 
             href="/about" 
-            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
+            className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center"
           >
             ABOUT
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="flex items-center justify-center text-white hover:text-yellow-200 font-semibold text-sm"
+            className="flex items-center justify-center text-white hover:text-yellow-200 font-medium text-xs"
           >
-            <SearchIcon className="h-4 w-4 mr-1" />
+            <SearchIcon className="h-3 w-3 mr-1" />
             <span>SEARCH</span>
           </button>
           
           {userData?.isAuthenticated ? (
             <div className="flex flex-col space-y-4">
               {userData.user.isAdmin && (
-                <Link href="/admin" className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center">
+                <Link href="/admin" className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center">
                   ADMIN DASHBOARD
                 </Link>
               )}
               <button 
-                className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
+                className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center"
                 onClick={handleLogout}
               >
                 LOGOUT
               </button>
             </div>
           ) : (
-            <Link href="/admin" className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center">
+            <Link href="/admin" className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center">
               LOGIN
             </Link>
           )}
