@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,7 +6,7 @@ import { useRoute } from "wouter";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useCategoryOptions } from "@/hooks/use-categories";
+import { useCategories } from "@/hooks/use-categories";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,16 @@ const EditPost = () => {
   const postId = match ? parseInt(params.id, 10) : null;
   const [_, navigate] = useLocation();
   const { toast } = useToast();
-  const categoryOptions = useCategoryOptions();
+  // Use the categories from API
+  const categories = useCategories();
+  
+  // Create options for select dropdown
+  const categoryOptions = useMemo(() => {
+    return categories.map((category) => ({
+      label: category.name,
+      value: category.id.toString()
+    }));
+  }, [categories]);
 
   // Get current date in YYYY-MM-DD format
   const today = new Date();
