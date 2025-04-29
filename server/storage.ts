@@ -710,7 +710,7 @@ export class DatabaseStorage implements IStorage {
       
       // Create default categories if they don't exist
       const categoryData = [
-        { name: "Reflection", slug: "reflection", description: "Thoughtful reflections on mindful living" },
+        { name: "Mindfulness", slug: "mindfulness", description: "Thoughtful practices for mindful living" },
         { name: "How-To", slug: "how-to", description: "Practical guides for mindful practices" },
         { name: "Story", slug: "story", description: "Personal stories of transformation" }
       ];
