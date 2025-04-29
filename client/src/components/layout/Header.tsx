@@ -56,10 +56,10 @@ export default function Header() {
   
   return (
     <header className="w-full bg-gradient-to-r from-blue-600 to-purple-700 shadow-md fixed top-0 z-10">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2 animate-fade-in">
+      <div className="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+        <Link href="/" className="flex items-center space-x-2 animate-fade-in mr-4">
           <i className="ri-seedling-line text-2xl text-white"></i>
-          <h1 className="text-3xl font-handwritten text-white font-bold">The Quiet Seed</h1>
+          <h1 className="text-3xl font-handwritten text-white font-bold">The Quiet Blog</h1>
         </Link>
         
         {/* Mobile menu button */}
@@ -76,7 +76,7 @@ export default function Header() {
         </button>
         
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8 animate-fade-in">
+        <nav className="flex items-center space-x-8 animate-fade-in">
           <Link 
             href="/" 
             className="nav-link text-white hover:text-yellow-200 transition-colors font-medium"
