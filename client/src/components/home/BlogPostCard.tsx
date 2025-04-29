@@ -45,9 +45,9 @@ export default function BlogPostCard({ post }: BlogPostCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full bg-primary/20 overflow-hidden flex items-center justify-center">
-              <span className="text-primary-foreground text-xs font-medium">{post.authorName.charAt(0)}</span>
+              <span className="text-primary-foreground text-xs font-medium">{post.authorName ? post.authorName.charAt(0) : 'A'}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{post.authorName}</span>
+            <span className="text-xs text-muted-foreground">{post.authorName || 'Anonymous'}</span>
           </div>
           <span className="text-xs text-muted-foreground">{formatDate(post.publishedAt)}</span>
         </div>
