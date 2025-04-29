@@ -11,7 +11,7 @@ export default function FeaturedPost() {
   const { data: userData } = useCurrentUser();
   
   // Determine where the "Write a Post" button should link to based on authentication
-  const writePostLink = userData?.isAuthenticated ? "/admin" : "/admin"; // Both go to admin where login happens
+  const writePostLink = userData?.isAuthenticated ? "/admin" : "/auth"; // Send to auth page if not logged in
   
   // Hero section with fruit art when no featured post is available
   if (!featuredPost) {
