@@ -58,7 +58,7 @@ export default function Footer() {
               <i className="ri-mail-line mr-2 text-primary"></i> hello@quietseed.com
             </p>
             <p className="text-sm text-muted-foreground">
-              <i className="ri-map-pin-line mr-2 text-primary"></i> Portland, Oregon
+              <i className="ri-map-pin-line mr-2 text-primary"></i> Japan
             </p>
           </div>
         </div>
