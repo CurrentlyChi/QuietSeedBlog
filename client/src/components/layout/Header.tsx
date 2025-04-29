@@ -84,7 +84,7 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className={`nav-link text-primary hover:text-primary-foreground transition-colors`}
+            className="nav-link bg-primary text-white font-medium px-4 py-2 rounded-md shadow-sm hover:bg-primary/90 transition-colors"
           >
             Blog
           </Link>
@@ -97,10 +97,10 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary-foreground transition-colors flex items-center p-2 rounded-full"
+            className="bg-primary text-white hover:bg-primary/80 transition-colors flex items-center p-3 rounded-lg shadow-md"
             aria-label="Search"
           >
-            <SearchIcon className="h-5 w-5" />
+            <SearchIcon className="h-6 w-6" />
           </button>
           
           {isSearchOpen && (
@@ -161,7 +161,7 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className="text-primary pb-2 border-b border-muted"
+            className="bg-primary text-white font-medium py-2 px-4 rounded-md w-full flex justify-center mb-2"
           >
             Blog
           </Link>
@@ -174,9 +174,9 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="flex items-center space-x-2 bg-primary/10 hover:bg-primary/20 text-primary p-3 rounded-md w-full transition-colors"
+            className="flex items-center space-x-2 bg-primary text-white p-3 rounded-md w-full transition-colors shadow-md"
           >
-            <SearchIcon className="h-4 w-4" />
+            <SearchIcon className="h-5 w-5" />
             <span>Search posts...</span>
           </button>
           
