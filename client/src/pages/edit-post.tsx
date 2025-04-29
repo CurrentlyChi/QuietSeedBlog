@@ -36,14 +36,17 @@ import { format } from "date-fns";
 
 // Create a form schema
 const formSchema = insertPostSchema.extend({
-  featured: z.enum(["true", "false"]),
-  // Override publishedAt to accept both string and Date
-  publishedAt: z.union([z.string(), z.date()]).transform(val => {
-    if (typeof val === 'string') {
-      return new Date(val);
-    }
-    return val;
-  }),
+  featured: z.enum(["true", "false"]).transform(val => val === "true"),
+  // Override publishedAt to ensure it's always a Date object
+  publishedAt: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        return new Date(val);
+      }
+      return val;
+    },
+    z.date()
+  ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -319,7 +322,17 @@ const EditPost = () => {
               />
 
               {/* Hidden authorId field - we'll always use the current logged in user */}
-              <input type="hidden" name="authorId" value="1" />
+              <FormField
+                control={form.control}
+                name="authorId"
+                render={({ field }) => (
+                  <FormItem className="hidden">
+                    <FormControl>
+                      <Input type="hidden" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -331,6 +344,7 @@ const EditPost = () => {
                         checked={field.value === "true"}
                         onCheckedChange={(checked) => {
                           field.onChange(checked ? "true" : "false");
+                          // This line is important - we're transforming from string to boolean in the schema
                         }}
                       />
                     </FormControl>
