@@ -55,17 +55,17 @@ export default function Header() {
   };
   
   return (
-    <header className="w-full bg-white shadow-sm fixed top-0 z-10">
+    <header className="w-full bg-gradient-to-r from-blue-600 to-purple-700 shadow-md fixed top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2 animate-fade-in">
-          <i className="ri-seedling-line text-2xl text-primary"></i>
-          <h1 className="text-3xl font-handwritten text-primary font-bold">The Quiet Seed</h1>
+          <i className="ri-seedling-line text-2xl text-white"></i>
+          <h1 className="text-3xl font-handwritten text-white font-bold">The Quiet Seed</h1>
         </Link>
         
         {/* Mobile menu button */}
         <button 
           onClick={isMobileMenuOpen ? closeMobileMenu : openMobileMenu}
-          className="lg:hidden text-primary-foreground focus:outline-none"
+          className="lg:hidden text-white bg-blue-800 p-2 rounded-md focus:outline-none"
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {isMobileMenuOpen ? (
@@ -79,29 +79,30 @@ export default function Header() {
         <nav className="hidden lg:flex items-center space-x-8 animate-fade-in">
           <Link 
             href="/" 
-            className={`nav-link ${isActive("/") ? "active text-primary-foreground font-medium" : "text-primary hover:text-primary-foreground transition-colors"}`}
+            className="nav-link text-white hover:text-yellow-200 transition-colors font-medium"
           >
             Home
           </Link>
           <Link 
             href="/" 
-            className="nav-link bg-primary text-white font-medium px-4 py-2 rounded-md shadow-sm hover:bg-primary/90 transition-colors"
+            className="nav-link bg-yellow-400 text-blue-800 font-bold px-4 py-2 rounded-md shadow-sm hover:bg-yellow-300 transition-colors"
           >
-            Blog
+            BLOG
           </Link>
           <Link 
             href="/about" 
-            className={`nav-link ${isActive("/about") ? "active text-primary-foreground font-medium" : "text-primary hover:text-primary-foreground transition-colors"}`}
+            className="nav-link text-white hover:text-yellow-200 transition-colors font-medium"
           >
             About
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center p-2 rounded-lg"
+            className="bg-white text-blue-800 hover:bg-yellow-100 transition-colors flex items-center p-2 rounded-lg shadow-md"
             aria-label="Search"
           >
-            <SearchIcon className="h-5 w-5" />
+            <SearchIcon className="h-6 w-6" />
+            <span className="ml-2 font-medium">Search</span>
           </button>
           
           {isSearchOpen && (
@@ -152,33 +153,33 @@ export default function Header() {
       </div>
       
       {/* Mobile Navigation */}
-      <nav className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-white py-4 shadow-md animate-slide-up lg:hidden`}>
+      <nav className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-gradient-to-r from-blue-700 to-purple-800 py-4 shadow-md animate-slide-up lg:hidden`}>
         <div className="container mx-auto px-4 flex flex-col space-y-4">
           <Link 
             href="/" 
-            className={`${isActive("/") ? "text-primary-foreground font-medium" : "text-primary"} pb-2 border-b border-muted`}
+            className="text-white hover:text-yellow-200 pb-2 border-b border-blue-500 font-medium"
           >
             Home
           </Link>
           <Link 
             href="/" 
-            className="bg-primary text-white font-medium py-2 px-4 rounded-md w-full flex justify-center"
+            className="bg-yellow-400 text-blue-800 font-bold py-3 px-4 rounded-md w-full flex justify-center shadow-md"
           >
-            Blog
+            BLOG
           </Link>
           <Link 
             href="/about" 
-            className={`${isActive("/about") ? "text-primary-foreground font-medium" : "text-primary"} pb-2 border-b border-muted`}
+            className="text-white hover:text-yellow-200 pb-2 border-b border-blue-500 font-medium"
           >
             About
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="flex items-center justify-center space-x-2 bg-primary/10 text-primary p-3 rounded-md w-full transition-colors"
+            className="flex items-center justify-center space-x-2 bg-white text-blue-800 p-3 rounded-md w-full transition-colors shadow-md font-medium"
           >
-            <SearchIcon className="h-5 w-5" />
-            <span>Search</span>
+            <SearchIcon className="h-6 w-6" />
+            <span>SEARCH</span>
           </button>
           
           {userData?.isAuthenticated ? (
