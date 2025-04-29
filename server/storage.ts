@@ -16,6 +16,9 @@ import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 
 export interface IStorage {
+  // Session store for authentication
+  sessionStore: session.Store;
+  
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -59,12 +62,19 @@ export class MemStorage implements IStorage {
   private userId: number;
   private categoryId: number;
   private postId: number;
+  
+  public sessionStore: session.Store;
 
   constructor() {
+    const MemoryStore = require('memorystore')(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+    
     this.users = new Map();
     this.categories = new Map();
     this.posts = new Map();
-    this.siteSettings = { ...defaultSiteSettings };
+    this.siteSettings = { id: 1, tagline: defaultSiteSettings.tagline, updatedAt: new Date() };
     this.pageContents = new Map();
     
     this.userId = 1;
@@ -72,7 +82,7 @@ export class MemStorage implements IStorage {
     this.postId = 1;
     
     // Initialize the about page content
-    this.pageContents.set('about', { ...defaultAboutPageContent });
+    this.pageContents.set('about', { ...defaultAboutPageContent, lastUpdated: new Date() });
     
     this.seedData();
   }
@@ -374,4 +384,330 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.Store;
+  
+  constructor() {
+    const PostgresStore = connectPg(session);
+    this.sessionStore = new PostgresStore({
+      pool,
+      createTableIfMissing: true,
+      tableName: 'session'
+    });
+  }
+  
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+  
+  // Category methods
+  async getAllCategories(): Promise<Category[]> {
+    return db.select().from(categories);
+  }
+
+  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.slug, slug));
+    return category;
+  }
+  
+  async getCategoryById(id: number): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.id, id));
+    return category;
+  }
+
+  async createCategory(category: InsertCategory): Promise<Category> {
+    const [newCategory] = await db.insert(categories).values(category).returning();
+    return newCategory;
+  }
+  
+  // Post methods
+  async getAllPosts(): Promise<Post[]> {
+    return db.select().from(posts).orderBy(desc(posts.publishedAt));
+  }
+
+  async getPost(id: number): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    return post;
+  }
+
+  async getPostBySlug(slug: string): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.slug, slug));
+    return post;
+  }
+
+  async getPostWithDetails(slug: string): Promise<PostWithDetails | undefined> {
+    const postRecord = await db.select()
+      .from(posts)
+      .where(eq(posts.slug, slug))
+      .limit(1);
+    
+    if (postRecord.length === 0) return undefined;
+    
+    const post = postRecord[0];
+    const category = await this.getCategoryById(post.categoryId);
+    const author = await this.getUser(post.authorId);
+    
+    if (!category || !author) return undefined;
+    
+    return {
+      ...post,
+      categoryName: category.name,
+      categorySlug: category.slug,
+      authorName: author.name
+    };
+  }
+
+  async getFeaturedPost(): Promise<PostWithDetails | undefined> {
+    // First try to find a featured post
+    const featuredPosts = await db.select()
+      .from(posts)
+      .where(eq(posts.featured, true))
+      .orderBy(desc(posts.publishedAt))
+      .limit(1);
+    
+    if (featuredPosts.length > 0) {
+      return this.getPostWithDetails(featuredPosts[0].slug);
+    }
+    
+    // If no featured post, get the most recent post
+    const recentPosts = await db.select()
+      .from(posts)
+      .orderBy(desc(posts.publishedAt))
+      .limit(1);
+    
+    if (recentPosts.length > 0) {
+      return this.getPostWithDetails(recentPosts[0].slug);
+    }
+    
+    return undefined;
+  }
+
+  async getPostsByCategory(categorySlug: string): Promise<Post[]> {
+    const category = await this.getCategoryBySlug(categorySlug);
+    if (!category) return [];
+    
+    return db.select()
+      .from(posts)
+      .where(eq(posts.categoryId, category.id))
+      .orderBy(desc(posts.publishedAt));
+  }
+
+  async createPost(post: InsertPost): Promise<Post> {
+    // Convert string date to Date object if needed
+    const postData: any = {...post};
+    if (typeof postData.publishedAt === 'string') {
+      postData.publishedAt = new Date(postData.publishedAt);
+    }
+    
+    const [newPost] = await db.insert(posts).values(postData).returning();
+    return newPost;
+  }
+
+  async updatePost(id: number, updatedFields: Partial<InsertPost>): Promise<Post | undefined> {
+    // Convert string date to Date object if needed
+    const postData: any = {...updatedFields};
+    if (typeof postData.publishedAt === 'string') {
+      postData.publishedAt = new Date(postData.publishedAt);
+    }
+    
+    // Add updated timestamp
+    postData.updatedAt = new Date();
+    
+    const [updatedPost] = await db
+      .update(posts)
+      .set(postData)
+      .where(eq(posts.id, id))
+      .returning();
+    
+    return updatedPost;
+  }
+
+  async deletePost(id: number): Promise<boolean> {
+    const result = await db
+      .delete(posts)
+      .where(eq(posts.id, id));
+    
+    return !!result;
+  }
+
+  async searchPosts(query: string): Promise<Post[]> {
+    const searchTerm = `%${query}%`;
+    
+    return db.select()
+      .from(posts)
+      .where(
+        or(
+          like(posts.title, searchTerm),
+          like(posts.content, searchTerm),
+          like(posts.excerpt, searchTerm)
+        )
+      )
+      .orderBy(desc(posts.publishedAt));
+  }
+  
+  // Site settings methods
+  async getSiteSettings(): Promise<SiteSettings> {
+    const allSettings = await db.select().from(siteSettings);
+    // If we have settings, return the first one
+    if (allSettings.length > 0) {
+      return allSettings[0];
+    }
+    
+    // Otherwise create default settings
+    const [newSettings] = await db
+      .insert(siteSettings)
+      .values({
+        tagline: defaultSiteSettings.tagline,
+      })
+      .returning();
+    
+    return newSettings;
+  }
+  
+  async updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
+    const currentSettings = await this.getSiteSettings();
+    
+    const [updatedSettings] = await db
+      .update(siteSettings)
+      .set({
+        ...settings,
+        updatedAt: new Date()
+      })
+      .where(eq(siteSettings.id, currentSettings.id))
+      .returning();
+    
+    return updatedSettings;
+  }
+  
+  // Page content methods
+  async getPageContent(id: string): Promise<PageContent | undefined> {
+    const [content] = await db.select().from(pageContents).where(eq(pageContents.id, id));
+    
+    if (content) {
+      return content;
+    }
+    
+    // If it's the about page and it doesn't exist, create it with default content
+    if (id === 'about') {
+      return this.updatePageContent('about', defaultAboutPageContent);
+    }
+    
+    return undefined;
+  }
+  
+  async updatePageContent(id: string, content: Partial<InsertPageContent>): Promise<PageContent> {
+    // Try to get existing content first
+    const existingContent = await this.getPageContent(id);
+    
+    if (existingContent) {
+      // Update existing content
+      const [updatedContent] = await db
+        .update(pageContents)
+        .set({
+          ...content,
+          lastUpdated: new Date()
+        })
+        .where(eq(pageContents.id, id))
+        .returning();
+      
+      return updatedContent;
+    } else {
+      // Insert new content
+      const [newContent] = await db
+        .insert(pageContents)
+        .values({
+          id,
+          title: content.title || id.charAt(0).toUpperCase() + id.slice(1),
+          content: content.content || '',
+        })
+        .returning();
+      
+      return newContent;
+    }
+  }
+  
+  // Initialize the database with seed data if needed
+  async seedData() {
+    try {
+      // Check if admin user exists
+      const existingAdmin = await this.getUserByUsername('admin');
+      
+      if (!existingAdmin) {
+        // Create admin user
+        const adminUser: InsertUser = {
+          username: "admin",
+          password: "password",  // In production, this would be hashed
+          name: "Admin User",
+          isAdmin: true
+        };
+        await this.createUser(adminUser);
+      }
+      
+      // Check if author exists
+      const existingAuthor = await this.getUserByUsername('maichi');
+      
+      if (!existingAuthor) {
+        // Create author
+        const authorUser: InsertUser = {
+          username: "maichi",
+          password: "password",  // In production, this would be hashed
+          name: "Mai Chi",
+          isAdmin: false
+        };
+        await this.createUser(authorUser);
+      }
+      
+      // Create default categories if they don't exist
+      const categoryData = [
+        { name: "Reflection", slug: "reflection", description: "Thoughtful reflections on mindful living" },
+        { name: "How-To", slug: "how-to", description: "Practical guides for mindful practices" },
+        { name: "Story", slug: "story", description: "Personal stories of transformation" }
+      ];
+      
+      for (const cat of categoryData) {
+        const existing = await this.getCategoryBySlug(cat.slug);
+        if (!existing) {
+          await this.createCategory(cat);
+        }
+      }
+      
+      // Ensure we have site settings
+      await this.getSiteSettings();
+      
+      // Ensure we have about page content
+      await this.getPageContent('about');
+      
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    }
+  }
+}
+
+// Switch to database storage for persistence
+export const storage = new DatabaseStorage();
+
+// Initialize the database with seed data
+storage.seedData().catch(err => {
+  console.error("Failed to seed database:", err);
+});
