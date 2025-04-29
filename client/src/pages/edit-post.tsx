@@ -29,11 +29,21 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCategoryOptions } from "@/hooks/use-categories";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 // Create a form schema
 const formSchema = insertPostSchema.extend({
   featured: z.enum(["true", "false"]),
+  // Override publishedAt to accept both string and Date
+  publishedAt: z.union([z.string(), z.date()]).transform(val => {
+    if (typeof val === 'string') {
+      return new Date(val);
+    }
+    return val;
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -52,12 +62,12 @@ const EditPost = () => {
     defaultValues: {
       title: "",
       content: "",
-      category: "Reflection",
+      slug: "",
       excerpt: "",
-      featuredImage: "",
-      author: "Olivia Gardens",
-      authorImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      readTime: "5 min read",
+      imageUrl: "",
+      publishedAt: new Date(),
+      categoryId: 1, // Reflection category
+      authorId: 1, // Admin user
       featured: "false",
     },
   });
@@ -192,13 +202,13 @@ const EditPost = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="categoryId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
+                        onValueChange={(value) => field.onChange(parseInt(value, 10))} 
+                        defaultValue={field.value?.toString()}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -220,12 +230,49 @@ const EditPost = () => {
 
                 <FormField
                   control={form.control}
-                  name="readTime"
+                  name="publishedAt"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Publish Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                {/* Add slug field */}
+                <FormField
+                  control={form.control}
+                  name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Read Time</FormLabel>
+                      <FormLabel>Slug</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. 5 min read" {...field} />
+                        <Input placeholder="Post URL path (e.g. my-first-post)" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -235,7 +282,7 @@ const EditPost = () => {
 
               <FormField
                 control={form.control}
-                name="featuredImage"
+                name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Featured Image URL</FormLabel>
@@ -271,35 +318,8 @@ const EditPost = () => {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="author"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Author Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="authorImage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Author Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="URL to the author's profile image" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              {/* Hidden authorId field - we'll always use the current logged in user */}
+              <input type="hidden" name="authorId" value="1" />
 
               <FormField
                 control={form.control}
