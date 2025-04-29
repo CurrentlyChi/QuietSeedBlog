@@ -223,7 +223,7 @@ export class MemStorage implements IStorage {
       // Create admin user
       const adminUser: InsertUser = {
         username: "admin",
-        password: "admin123",
+        password: "password", // Changed to match user expectation
         name: "Admin User",
         isAdmin: true
       };
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
       // Create author
       const authorUser: InsertUser = {
         username: "maichi",
-        password: "password123",
+        password: "password", // Changed to match user expectation
         name: "Mai Chi",
         isAdmin: false
       };
