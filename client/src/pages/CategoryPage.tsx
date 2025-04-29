@@ -1,6 +1,7 @@
 import { useRoute } from "wouter";
 import { useState } from "react";
 import { usePostsByCategory, usePosts } from "@/lib/hooks";
+import { Post, PostWithDetails } from "@shared/schema";
 import BlogPostLine from "@/components/home/BlogPostLine";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,8 +16,8 @@ export default function CategoryPage() {
   const { data: categoryPosts = [], isLoading: categoryLoading, error: categoryError } = usePostsByCategory(categorySlug);
   const { data: allPosts = [], isLoading: allPostsLoading, error: allPostsError } = usePosts();
   
-  // Select data source based on category
-  const posts = categorySlug === 'all' ? allPosts : categoryPosts;
+  // Select data source based on category with proper typing
+  const posts: Post[] = categorySlug === 'all' ? (allPosts as Post[]) : (categoryPosts as Post[]);
   const isLoading = categorySlug === 'all' ? allPostsLoading : categoryLoading;
   const error = categorySlug === 'all' ? allPostsError : categoryError;
   
@@ -96,7 +97,7 @@ export default function CategoryPage() {
         <>
           <section className="mb-8">
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              {paginatedPosts.map(post => (
+              {paginatedPosts.map((post: Post) => (
                 <BlogPostLine key={post.id} post={post} />
               ))}
             </div>
