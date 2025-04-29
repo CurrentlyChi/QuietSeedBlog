@@ -97,10 +97,11 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="bg-primary text-white hover:bg-primary/80 transition-colors flex items-center p-3 rounded-lg shadow-md"
+            className="bg-primary text-white hover:bg-primary/80 transition-colors flex items-center p-3 rounded-lg shadow-md relative animate-pulse"
             aria-label="Search"
           >
-            <SearchIcon className="h-6 w-6" />
+            <SearchIcon className="h-7 w-7" />
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">!</span>
           </button>
           
           {isSearchOpen && (
@@ -174,10 +175,11 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="flex items-center space-x-2 bg-primary text-white p-3 rounded-md w-full transition-colors shadow-md"
+            className="flex items-center space-x-2 bg-primary text-white p-3 rounded-md w-full transition-colors shadow-md relative animate-pulse"
           >
-            <SearchIcon className="h-5 w-5" />
-            <span>Search posts...</span>
+            <SearchIcon className="h-6 w-6" />
+            <span className="font-bold">SEARCH HERE</span>
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">!</span>
           </button>
           
           {userData?.isAuthenticated ? (
