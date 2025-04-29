@@ -53,12 +53,14 @@ export default function BlogPost() {
             />
           </div>
           
-          <Link 
-            href={`/category/${post.categorySlug}`}
-            className="inline-block px-3 py-1 bg-primary/80 text-white rounded-full text-xs mb-3"
-          >
-            {post.categoryName}
-          </Link>
+          {post.categoryName && post.categorySlug && (
+            <Link 
+              href={`/category/${post.categorySlug}`}
+              className="inline-block px-3 py-1 bg-primary/80 text-white rounded-full text-xs mb-3"
+            >
+              {post.categoryName}
+            </Link>
+          )}
           
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
             {post.title}

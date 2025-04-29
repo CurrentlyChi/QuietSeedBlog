@@ -84,7 +84,7 @@ export default function Header() {
             HOME
           </Link>
           <Link 
-            href="/" 
+            href="/blog" 
             className="nav-link text-white hover:text-yellow-200 transition-colors text-xs font-medium"
           >
             BLOG
@@ -161,7 +161,7 @@ export default function Header() {
             HOME
           </Link>
           <Link 
-            href="/" 
+            href="/blog" 
             className="text-white hover:text-yellow-200 font-medium text-xs flex justify-center"
           >
             BLOG
