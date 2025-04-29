@@ -36,14 +36,25 @@ import { format } from "date-fns";
 
 // Create a form schema
 const formSchema = insertPostSchema.extend({
-  featured: z.enum(["true", "false"]).transform(val => val === "true"),
+  // Ensure featured is always a boolean
+  featured: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') {
+        return val === "true";
+      }
+      return Boolean(val);
+    },
+    z.boolean()
+  ),
   // Override publishedAt to ensure it's always a Date object
   publishedAt: z.preprocess(
     (val) => {
       if (typeof val === 'string') {
-        return new Date(val);
+        // Make sure we have a valid date string
+        const date = new Date(val);
+        return isNaN(date.getTime()) ? new Date() : date;
       }
-      return val;
+      return val instanceof Date ? val : new Date();
     },
     z.date()
   ),
@@ -71,7 +82,7 @@ const EditPost = () => {
       publishedAt: new Date(),
       categoryId: 1, // Reflection category
       authorId: 1, // Admin user
-      featured: "false", // Will transform to boolean via the formSchema transform
+      featured: false, // Boolean value
     },
   });
 
@@ -354,10 +365,10 @@ const EditPost = () => {
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
-                        checked={field.value === "true"}
+                        checked={!!field.value}
                         onCheckedChange={(checked) => {
-                          field.onChange(checked ? "true" : "false");
-                          // This line is important - we're transforming from string to boolean in the schema
+                          field.onChange(checked || false);
+                          // Now using boolean values directly
                         }}
                       />
                     </FormControl>
