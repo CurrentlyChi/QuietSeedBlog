@@ -13,19 +13,26 @@ export default function FeaturedPost() {
     return (
       <section className="mb-16 py-20 bg-[#F9F6FF]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
+          <div className="flex flex-col lg:flex-row-reverse items-center gap-8">
+            <div className="w-full lg:w-1/2 relative">
+              <img 
+                src={fruitArtwork} 
+                alt="Artistic fruit illustration" 
+                className="max-w-full h-auto rounded-3xl shadow-lg"
+              />
+            </div>
             <div className="w-full lg:w-1/2 space-y-6">
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight">
                 Welcome to<br />
                 <span className="text-primary font-handwritten">The Quiet Seed</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-lg">
-                A space for mindful reflections, gentle guides, and thoughtful stories about slow living in a fast-paced world.
+                A personal space for mindful reflections and thoughtful stories about slow living in a fast-paced world.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button asChild size="lg">
-                  <Link href="/category/reflection">
-                    Read Reflections
+                  <Link href="/admin">
+                    Write a Post
                   </Link>
                 </Button>
                 <Button variant="outline" asChild size="lg">
@@ -34,13 +41,6 @@ export default function FeaturedPost() {
                   </Link>
                 </Button>
               </div>
-            </div>
-            <div className="w-full lg:w-1/2 relative">
-              <img 
-                src={fruitArtwork} 
-                alt="Artistic fruit illustration" 
-                className="max-w-full h-auto rounded-3xl shadow-lg"
-              />
             </div>
           </div>
         </div>
