@@ -2,24 +2,51 @@ import { Link } from "wouter";
 import { useFeaturedPost } from "@/lib/hooks";
 import { formatDate, getReadingTime } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import fruitArtwork from "@/assets/fruit-art.svg";
 
 export default function FeaturedPost() {
   const { data, isLoading, error } = useFeaturedPost();
   
-  // Ensure we have a properly typed post object
-  const post = data || {
-    title: "",
-    slug: "",
-    content: "",
-    excerpt: "",
-    imageUrl: "",
-    publishedAt: new Date(),
-    categoryId: 0,
-    authorId: 0,
-    categoryName: "",
-    categorySlug: "",
-    authorName: ""
-  };
+  // Hero section with fruit art when no featured post is available
+  if (!data) {
+    return (
+      <section className="mb-16 py-20 bg-[#F9F6FF]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            <div className="w-full lg:w-1/2 space-y-6">
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight">
+                Welcome to<br />
+                <span className="text-primary font-handwritten">The Quiet Seed</span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-lg">
+                A space for mindful reflections, gentle guides, and thoughtful stories about slow living in a fast-paced world.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Button asChild size="lg">
+                  <Link href="/category/reflection">
+                    Read Reflections
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild size="lg">
+                  <Link href="/about">
+                    About This Blog
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="w-full lg:w-1/2 relative">
+              <img 
+                src={fruitArtwork} 
+                alt="Artistic fruit illustration" 
+                className="max-w-full h-auto rounded-3xl shadow-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
   
   if (isLoading) {
     return (
@@ -31,11 +58,12 @@ export default function FeaturedPost() {
     );
   }
   
-  if (error || !data) {
+  if (error) {
     return null;
   }
   
-  // Default author initial if authorName is missing
+  // If we have a featured post, show it
+  const post = data;
   const authorInitial = post.authorName ? post.authorName.charAt(0) : "A";
   const authorName = post.authorName || "Anonymous";
   
