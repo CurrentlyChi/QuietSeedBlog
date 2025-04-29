@@ -179,15 +179,14 @@ export class MemStorage implements IStorage {
     const post = await this.getPostBySlug(slug);
     if (!post) return undefined;
 
-    const category = await this.getCategoryById(post.categoryId);
     const author = await this.getUser(post.authorId);
 
-    if (!category || !author) return undefined;
+    if (!author) return undefined;
 
     return {
       ...post,
-      categoryName: category.name,
-      categorySlug: category.slug,
+      categoryName: "Uncategorized", // Default value since categories are removed
+      categorySlug: "uncategorized", // Default value
       authorName: author.name
     };
   }
@@ -465,15 +464,14 @@ export class DatabaseStorage implements IStorage {
     if (postRecord.length === 0) return undefined;
     
     const post = postRecord[0];
-    const category = await this.getCategoryById(post.categoryId);
     const author = await this.getUser(post.authorId);
     
-    if (!category || !author) return undefined;
+    if (!author) return undefined;
     
     return {
       ...post,
-      categoryName: category.name,
-      categorySlug: category.slug,
+      categoryName: "Uncategorized", // Default value since categories are removed
+      categorySlug: "uncategorized", // Default value
       authorName: author.name
     };
   }
