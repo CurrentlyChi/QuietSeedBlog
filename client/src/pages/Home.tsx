@@ -3,7 +3,6 @@ import { useLocation, useRoute } from "wouter";
 import { usePosts, usePostsByCategory, useSearchPosts } from "@/lib/hooks";
 import FeaturedPost from "@/components/home/FeaturedPost";
 import BlogPostCard from "@/components/home/BlogPostCard";
-import Newsletter from "@/components/home/Newsletter";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -130,8 +129,6 @@ export default function Home() {
           basePath={basePath || "/"}
         />
       </section>
-      
-      <Newsletter />
     </div>
   );
 }
