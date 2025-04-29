@@ -1,33 +1,46 @@
 import Newsletter from "@/components/home/Newsletter";
 import fruitArtwork from "@/assets/fruit-art.svg";
+import { usePageContent } from "@/lib/hooks";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function About() {
+  const { data: pageContent, isLoading, error } = usePageContent("about");
+
   return (
     <div className="animate-fade-in">
       <section className="max-w-4xl mx-auto prose prose-headings:font-serif prose-headings:text-primary-foreground prose-p:text-foreground">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-6">About The Quiet Seed</h1>
-        
-        <div className="h-60 w-full rounded-2xl overflow-hidden mb-8 flex items-center justify-center bg-[#E6D7FF]">
-          <img 
-            src={fruitArtwork}
-            alt="Fruit artwork illustration" 
-            className="w-auto h-full object-contain"
-          />
-        </div>
-        
-        <div className="mb-8">
-          <p className="text-lg">
-            Welcome to The Quiet Seed, a personal space dedicated to mindful reflections and thoughtful stories about finding balance in our fast-paced world.
-          </p>
-          
-          <p>
-            This blog was created as a digital garden where ideas can grow slowly and organically. In a world of constant notifications and endless scrolling, The Quiet Seed offers a moment to pause, reflect, and appreciate the smaller moments that make life meaningful.
-          </p>
-
-          <p>
-            Here you'll find essays on mindfulness, personal growth, and the art of slow living. Each post is written with care and intention, focusing on quality over quantity.
-          </p>
-        </div>
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-3/4 mb-6" />
+            <Skeleton className="h-60 w-full rounded-2xl mb-8" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ) : error ? (
+          <div className="p-4 rounded-md bg-red-50 text-red-500">
+            <p>Error loading About page content. Please try again later.</p>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-6">
+              {pageContent?.title || "About The Quiet Seed"}
+            </h1>
+            
+            <div className="h-60 w-full rounded-2xl overflow-hidden mb-8 flex items-center justify-center bg-[#E6D7FF]">
+              <img 
+                src={fruitArtwork}
+                alt="Fruit artwork illustration" 
+                className="w-auto h-full object-contain"
+              />
+            </div>
+            
+            <div 
+              className="mb-8" 
+              dangerouslySetInnerHTML={{ __html: pageContent?.content || ""}}
+            />
+          </>
+        )}
         
         <h2>About the Author</h2>
         

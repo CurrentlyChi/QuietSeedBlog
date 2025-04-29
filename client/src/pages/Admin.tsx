@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link, useRoute } from "wouter";
-import { useCurrentUser, usePosts, useSiteSettings, useUpdateSiteSettings } from "@/lib/hooks";
+import { useCurrentUser, usePosts, useSiteSettings, useUpdateSiteSettings, usePageContent, useUpdatePageContent } from "@/lib/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDate } from "@/lib/utils";
-import { loginSchema, type SiteSettings } from "@shared/schema";
+import { loginSchema, type SiteSettings, type PageContent, type InsertPageContent } from "@shared/schema";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -229,6 +229,64 @@ export default function Admin() {
     }
   };
 
+  // Page content form
+  const { data: aboutPageContent, isLoading: pageContentLoading } = usePageContent("about");
+  const updatePageContent = useUpdatePageContent();
+  
+  // Create page content form schema
+  const pageContentFormSchema = z.object({
+    title: z.string().min(3, {
+      message: "Title must be at least 3 characters.",
+    }).max(100, {
+      message: "Title must not be longer than 100 characters.",
+    }),
+    content: z.string().min(20, {
+      message: "Content must be at least 20 characters.",
+    }),
+  });
+  
+  type PageContentFormValues = z.infer<typeof pageContentFormSchema>;
+  
+  // Page content form
+  const pageContentForm = useForm<PageContentFormValues>({
+    resolver: zodResolver(pageContentFormSchema),
+    defaultValues: {
+      title: aboutPageContent?.title || "",
+      content: aboutPageContent?.content || "",
+    },
+  });
+  
+  // Update form values when page content is loaded
+  useEffect(() => {
+    if (aboutPageContent) {
+      pageContentForm.reset({
+        title: aboutPageContent.title,
+        content: aboutPageContent.content,
+      });
+    }
+  }, [aboutPageContent]);
+  
+  // Submit page content form
+  const onPageContentSubmit = async (values: PageContentFormValues) => {
+    try {
+      await updatePageContent.mutateAsync({
+        pageId: "about",
+        content: values
+      });
+      
+      toast({
+        title: "Page content updated",
+        description: "The About page content has been successfully updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update page content",
+        variant: "destructive",
+      });
+    }
+  };
+  
   // Admin dashboard
   return (
     <div className="animate-fade-in">
@@ -242,6 +300,7 @@ export default function Admin() {
       <Tabs defaultValue="posts" className="mb-8">
         <TabsList className="mb-4">
           <TabsTrigger value="posts">Posts</TabsTrigger>
+          <TabsTrigger value="pages">Pages</TabsTrigger>
           <TabsTrigger value="settings">Site Settings</TabsTrigger>
         </TabsList>
         

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
-import { type User, type Category, type Post, type PostWithDetails, type SiteSettings } from "@shared/schema";
+import { type User, type Category, type Post, type PostWithDetails, type SiteSettings, type PageContent, type InsertPageContent } from "@shared/schema";
 
 // Define return types for our query hooks
 type QueryResult<T> = {
@@ -143,6 +143,32 @@ export function useUpdateSiteSettings() {
     onSuccess: () => {
       // Invalidate both settings and any component that might use settings
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+    }
+  });
+}
+
+// Custom hook for fetching page content
+export function usePageContent(pageId: string): QueryResult<PageContent> {
+  const { data, isLoading, error } = useQuery<PageContent>({
+    queryKey: ["/api/pages", pageId],
+    enabled: !!pageId
+  });
+  
+  return { data, isLoading, error: error as Error | null };
+}
+
+// Custom hook for updating page content
+export function useUpdatePageContent() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ pageId, content }: { pageId: string, content: Partial<InsertPageContent> }) => {
+      const response = await apiRequest("PUT", `/api/pages/${pageId}`, content);
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      // Invalidate the page content query
+      queryClient.invalidateQueries({ queryKey: ["/api/pages", variables.pageId] });
     }
   });
 }
