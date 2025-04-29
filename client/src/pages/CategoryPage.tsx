@@ -1,7 +1,7 @@
 import { useRoute } from "wouter";
 import { useState } from "react";
 import { usePostsByCategory } from "@/lib/hooks";
-import BlogPostCard from "@/components/home/BlogPostCard";
+import BlogPostLine from "@/components/home/BlogPostLine";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -20,15 +20,24 @@ export default function CategoryPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="rounded-xl overflow-hidden shadow-sm">
-              <Skeleton className="h-48 w-full" />
-              <div className="p-6 space-y-4">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-1/2" />
+            <div key={i} className="py-5 border-b border-muted last:border-b-0">
+              <div className="flex items-start space-x-4">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="h-5 w-24" />
+                  </div>
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full mb-1" />
+                  <Skeleton className="h-4 w-full mb-4" />
+                  <div className="flex items-center">
+                    <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="hidden sm:block h-24 w-24 rounded-md" />
               </div>
             </div>
           ))}
@@ -71,10 +80,12 @@ export default function CategoryPage() {
         </div>
       ) : (
         <>
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {paginatedPosts.map(post => (
-              <BlogPostCard key={post.id} post={post} />
-            ))}
+          <section className="mb-8">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              {paginatedPosts.map(post => (
+                <BlogPostLine key={post.id} post={post} />
+              ))}
+            </div>
           </section>
           
           {totalPages > 1 && (

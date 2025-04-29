@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import { usePosts, usePostsByCategory, useSearchPosts } from "@/lib/hooks";
 import FeaturedPost from "@/components/home/FeaturedPost";
-import BlogPostCard from "@/components/home/BlogPostCard";
+import BlogPostLine from "@/components/home/BlogPostLine";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -76,22 +76,24 @@ export default function Home() {
   });
   
   const renderSkeletons = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       {[1, 2, 3, 4, 5, 6].map(i => (
-        <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm">
-          <Skeleton className="h-48 w-full" />
-          <div className="p-6">
-            <Skeleton className="h-6 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-2/3 mb-4" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Skeleton className="h-8 w-8 rounded-full" />
+        <div key={i} className="py-5 border-b border-muted last:border-b-0">
+          <div className="flex items-start space-x-4">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-2">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-5 w-24" />
+              </div>
+              <Skeleton className="h-6 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-4" />
+              <div className="flex items-center">
+                <Skeleton className="h-6 w-6 rounded-full mr-2" />
                 <Skeleton className="h-4 w-20" />
               </div>
-              <Skeleton className="h-4 w-16" />
             </div>
+            <Skeleton className="hidden sm:block h-24 w-24 rounded-md" />
           </div>
         </div>
       ))}
@@ -116,9 +118,9 @@ export default function Home() {
             <p className="text-muted-foreground">No posts found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             {processedPosts.map(post => (
-              <BlogPostCard key={post.id} post={post} />
+              <BlogPostLine key={post.id} post={post} />
             ))}
           </div>
         )}
