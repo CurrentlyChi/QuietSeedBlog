@@ -3,6 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
 import { type User, type Category, type Post, type PostWithDetails } from "@shared/schema";
 
+// Define return types for our query hooks
+type QueryResult<T> = {
+  data: T | undefined;
+  isLoading: boolean;
+  error: Error | null;
+};
+
 // Custom hook for getting logged-in user
 export function useCurrentUser() {
   return useQuery({
@@ -83,22 +90,24 @@ export function usePost(slug: string | undefined) {
 // Custom hook for fetching posts by category
 export function usePostsByCategory(categorySlug: string | undefined) {
   return useQuery({
-    queryKey: [`/api/posts/category/${categorySlug}`],
+    queryKey: [`/api/category/${categorySlug}`],
     enabled: !!categorySlug
   });
 }
 
 // Custom hook for fetching the featured post
-export function useFeaturedPost() {
-  return useQuery({
+export function useFeaturedPost(): QueryResult<PostWithDetails> {
+  const { data, isLoading, error } = useQuery<PostWithDetails>({
     queryKey: ["/api/posts/featured"]
   });
+  
+  return { data, isLoading, error: error as Error | null };
 }
 
 // Custom hook for searching posts
 export function useSearchPosts(query: string) {
   return useQuery({
-    queryKey: [`/api/posts/search?q=${encodeURIComponent(query)}`],
+    queryKey: [`/api/search?q=${encodeURIComponent(query)}`],
     enabled: query.length > 0
   });
 }

@@ -1,226 +1,151 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { loginSchema, insertPostSchema } from "@shared/schema";
-import session from "express-session";
-import memoryStore from "memorystore";
-import { randomUUID } from "crypto";
-
-const MemoryStore = memoryStore(session);
-
-interface SessionData {
-  userId?: number;
-  isAdmin?: boolean;
-}
-
-declare module "express-session" {
-  interface SessionData {
-    user: SessionData;
-  }
-}
-
-// Middleware to check if user is authenticated
-const isAuthenticated = (req: Request, res: Response, next: Function) => {
-  if (!req.session.user?.userId) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  next();
-};
-
-// Middleware to check if user is admin
-const isAdmin = (req: Request, res: Response, next: Function) => {
-  if (!req.session.user?.isAdmin) {
-    return res.status(403).json({ message: "Forbidden" });
-  }
-  next();
-};
+import { insertPostSchema } from "@shared/schema";
+import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup session middleware
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || randomUUID(),
-      resave: false,
-      saveUninitialized: false,
-      store: new MemoryStore({
-        checkPeriod: 86400000 // Prune expired entries every 24h
-      }),
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        secure: process.env.NODE_ENV === "production"
-      }
-    })
-  );
-  
-  // API routes
-  // Authentication
-  app.post("/api/login", async (req, res) => {
-    try {
-      const data = loginSchema.parse(req.body);
-      const user = await storage.getUserByUsername(data.username);
-      
-      if (!user || user.password !== data.password) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-      
-      // Set session data
-      req.session.user = {
-        userId: user.id,
-        isAdmin: user.isAdmin
-      };
-      
-      // Return user info (excluding password)
-      const { password, ...userInfo } = user;
-      res.json(userInfo);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid request", error });
-    }
-  });
-  
-  app.post("/api/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Failed to logout" });
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-  
-  app.get("/api/me", async (req, res) => {
-    if (!req.session.user?.userId) {
-      return res.status(401).json({ isAuthenticated: false });
-    }
-    
-    try {
-      const user = await storage.getUser(req.session.user.userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      const { password, ...userInfo } = user;
-      res.json({ isAuthenticated: true, user: userInfo });
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching user data" });
-    }
-  });
-  
-  // Categories
-  app.get("/api/categories", async (req, res) => {
-    try {
-      const categories = await storage.getAllCategories();
-      res.json(categories);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching categories" });
-    }
-  });
-  
-  // Posts
-  app.get("/api/posts", async (req, res) => {
+  // Get all posts
+  app.get("/api/posts", async (_req: Request, res: Response) => {
     try {
       const posts = await storage.getAllPosts();
-      res.json(posts);
+      return res.json(posts);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching posts" });
+      return res.status(500).json({ message: "Failed to fetch posts" });
     }
   });
-  
-  app.get("/api/posts/featured", async (req, res) => {
+
+  // Get featured post
+  app.get("/api/posts/featured", async (_req: Request, res: Response) => {
     try {
       const post = await storage.getFeaturedPost();
-      
       if (!post) {
         return res.status(404).json({ message: "No featured post found" });
       }
+      return res.json(post);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch featured post" });
+    }
+  });
+
+  // Get post by ID
+  app.get("/api/posts/:idOrSlug", async (req: Request, res: Response) => {
+    try {
+      const idOrSlug = req.params.idOrSlug;
+      let post;
       
-      res.json(post);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching featured post" });
-    }
-  });
-  
-  app.get("/api/posts/search", async (req, res) => {
-    try {
-      const query = req.query.q as string || "";
-      const posts = await storage.searchPosts(query);
-      res.json(posts);
-    } catch (error) {
-      res.status(500).json({ message: "Error searching posts" });
-    }
-  });
-  
-  app.get("/api/posts/category/:slug", async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const posts = await storage.getPostsByCategory(slug);
-      res.json(posts);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching posts by category" });
-    }
-  });
-  
-  app.get("/api/posts/:slug", async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const post = await storage.getPostWithDetails(slug);
+      const id = parseInt(idOrSlug);
+      if (!isNaN(id)) {
+        // If it's a number, treat as ID
+        post = await storage.getPost(id);
+      } else {
+        // Otherwise, treat as slug
+        post = await storage.getPostWithDetails(idOrSlug);
+      }
       
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-      
-      res.json(post);
+
+      return res.json(post);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching post" });
+      return res.status(500).json({ message: "Failed to fetch post" });
     }
   });
-  
-  // Admin routes (protected)
-  app.post("/api/posts", isAuthenticated, isAdmin, async (req, res) => {
+
+  // Create new post
+  app.post("/api/posts", async (req: Request, res: Response) => {
     try {
-      const data = insertPostSchema.parse(req.body);
-      const post = await storage.createPost({
-        ...data,
-        authorId: req.session.user.userId!
-      });
-      
-      res.status(201).json(post);
+      const validatedData = insertPostSchema.parse(req.body);
+      const post = await storage.createPost(validatedData);
+      return res.status(201).json(post);
     } catch (error) {
-      res.status(400).json({ message: "Invalid post data", error });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid post data", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Failed to create post" });
     }
   });
-  
-  app.put("/api/posts/:id", isAuthenticated, isAdmin, async (req, res) => {
+
+  // Update post
+  app.put("/api/posts/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
-      const data = insertPostSchema.partial().parse(req.body);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+
+      const validatedData = insertPostSchema.partial().parse(req.body);
+      const updatedPost = await storage.updatePost(id, validatedData);
       
-      const post = await storage.updatePost(id, data);
-      
-      if (!post) {
+      if (!updatedPost) {
         return res.status(404).json({ message: "Post not found" });
       }
-      
-      res.json(post);
+
+      return res.json(updatedPost);
     } catch (error) {
-      res.status(400).json({ message: "Invalid post data", error });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid post data", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Failed to update post" });
     }
   });
-  
-  app.delete("/api/posts/:id", isAuthenticated, isAdmin, async (req, res) => {
+
+  // Delete post
+  app.delete("/api/posts/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+
       const success = await storage.deletePost(id);
-      
       if (!success) {
         return res.status(404).json({ message: "Post not found" });
       }
-      
-      res.json({ message: "Post deleted successfully" });
+
+      return res.json({ message: "Post deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting post" });
+      return res.status(500).json({ message: "Failed to delete post" });
+    }
+  });
+
+  // Search posts
+  app.get("/api/search", async (req: Request, res: Response) => {
+    try {
+      const query = req.query.q as string;
+      if (!query) {
+        return res.status(400).json({ message: "Search query is required" });
+      }
+
+      const posts = await storage.searchPosts(query);
+      return res.json(posts);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to search posts" });
+    }
+  });
+
+  // Get posts by category
+  app.get("/api/category/:category", async (req: Request, res: Response) => {
+    try {
+      const category = req.params.category;
+      const posts = await storage.getPostsByCategory(category);
+      return res.json(posts);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch posts by category" });
     }
   });
   
+  // Get all categories
+  app.get("/api/categories", async (_req: Request, res: Response) => {
+    try {
+      const categories = await storage.getAllCategories();
+      return res.json(categories);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

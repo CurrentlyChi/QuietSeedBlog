@@ -4,7 +4,22 @@ import { formatDate, getReadingTime } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function FeaturedPost() {
-  const { data: post, isLoading, error } = useFeaturedPost();
+  const { data, isLoading, error } = useFeaturedPost();
+  
+  // Ensure we have a properly typed post object
+  const post = data || {
+    title: "",
+    slug: "",
+    content: "",
+    excerpt: "",
+    imageUrl: "",
+    publishedAt: new Date(),
+    categoryId: 0,
+    authorId: 0,
+    categoryName: "",
+    categorySlug: "",
+    authorName: ""
+  };
   
   if (isLoading) {
     return (
@@ -16,24 +31,30 @@ export default function FeaturedPost() {
     );
   }
   
-  if (error || !post) {
+  if (error || !data) {
     return null;
   }
+  
+  // Default author initial if authorName is missing
+  const authorInitial = post.authorName ? post.authorName.charAt(0) : "A";
+  const authorName = post.authorName || "Anonymous";
   
   return (
     <section className="mb-16">
       <div className="w-full lg:w-10/12 mx-auto overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 bg-card relative">
         <div className="h-80 w-full bg-muted relative overflow-hidden">
           <img 
-            src={post.imageUrl} 
+            src={post.imageUrl || "https://images.unsplash.com/photo-1508214854206-19cbf82a85c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"} 
             alt={post.title} 
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent"></div>
           <div className="absolute bottom-0 left-0 p-8 text-white">
-            <Link href={`/category/${post.categorySlug}`} className="category-pill inline-block px-3 py-1 bg-primary/80 rounded-full text-xs mb-3">
-              {post.categoryName}
-            </Link>
+            {post.categorySlug && post.categoryName && (
+              <Link href={`/category/${post.categorySlug}`} className="category-pill inline-block px-3 py-1 bg-primary/80 rounded-full text-xs mb-3">
+                {post.categoryName}
+              </Link>
+            )}
             <Link href={`/post/${post.slug}`}>
               <h2 className="font-serif text-3xl md:text-4xl font-bold mb-2">{post.title}</h2>
             </Link>
@@ -42,10 +63,10 @@ export default function FeaturedPost() {
             </p>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-primary/30 overflow-hidden flex items-center justify-center">
-                <span className="text-white font-medium">{post.authorName.charAt(0)}</span>
+                <span className="text-white font-medium">{authorInitial}</span>
               </div>
               <div>
-                <p className="font-medium">{post.authorName}</p>
+                <p className="font-medium">{authorName}</p>
                 <p className="text-sm text-white/80">
                   {formatDate(post.publishedAt)} · {getReadingTime(post.content)}
                 </p>

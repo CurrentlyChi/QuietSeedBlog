@@ -4,12 +4,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Layout from "@/components/layout/Layout";
 import Home from "@/pages/Home";
 import BlogPost from "@/pages/BlogPost";
 import About from "@/pages/About";
 import Admin from "@/pages/Admin";
 import AdminEditor from "@/pages/AdminEditor";
+import Layout from "@/components/layout/Layout";
 
 function Router() {
   return (
@@ -17,12 +17,10 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/post/:slug" component={BlogPost} />
-        <Route path="/category/:slug" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/admin" component={Admin} />
-        <Route path="/admin/new" component={AdminEditor} />
         <Route path="/admin/edit/:id" component={AdminEditor} />
-        <Route path="/search" component={Home} />
+        <Route path="/admin/new" component={AdminEditor} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

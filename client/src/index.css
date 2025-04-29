@@ -4,72 +4,49 @@
 
 @layer base {
   :root {
-    --background: 260 15% 98%;
-    --foreground: 240 10% 4%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
-    
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
-    
-    --primary: 260 60% 55%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --primary: 267 75% 59%;
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 260 25% 96%;
-    --secondary-foreground: 240 10% 4%;
-    
-    --muted: 260 15% 95%;
-    --muted-foreground: 240 5% 40%;
-    
-    --accent: 260 25% 90%;
-    --accent-foreground: 240 10% 4%;
-    
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    
-    --border: 260 20% 90%;
-    --input: 260 20% 90%;
-    --ring: 260 60% 55%;
-    
+    --secondary: 267 45% 96%;
+    --secondary-foreground: 267 75% 40%;
+    --accent: 267 45% 96%;
+    --accent-foreground: 267 75% 40%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --ring: 267 75% 59%;
     --radius: 0.5rem;
-
-    /* Chart colors */
-    --chart-1: 260 60% 55%;
-    --chart-2: 280 60% 55%;
-    --chart-3: 300 60% 55%;
-    --chart-4: 320 60% 55%;
-    --chart-5: 340 60% 55%;
   }
-  
+ 
   .dark {
-    --background: 240 10% 4%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    
-    --card: 240 10% 7%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 10% 7%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    
-    --primary: 260 60% 55%;
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 240 15% 15%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --primary: 267 75% 59%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    
-    --muted: 240 15% 15%;
-    --muted-foreground: 240 5% 65%;
-    
-    --accent: 240 15% 15%;
+    --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    
-    --destructive: 0 62% 30%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    
-    --border: 240 15% 20%;
-    --input: 240 15% 20%;
-    --ring: 260 60% 55%;
+    --ring: 267 75% 59%;
+    --radius: 0.5rem;
   }
 }
 
@@ -77,91 +54,61 @@
   * {
     @apply border-border;
   }
-  
+
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans antialiased bg-gray-50 text-foreground;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
   }
 }
 
-/* Custom fonts */
-.font-serif {
-  font-family: 'Playfair Display', serif;
-}
+@layer components {
+  .nav-link {
+    @apply relative inline-flex items-center px-1 pt-1 text-sm font-medium;
+  }
 
-.font-sans {
-  font-family: 'Lato', sans-serif;
-}
+  .nav-link::after {
+    content: '';
+    @apply block w-0 h-0.5 bg-primary transition-all duration-300;
+  }
 
-/* Custom animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+  .nav-link:hover::after {
+    @apply w-full;
+  }
 
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+  .post-card {
+    @apply transition-all duration-300;
+  }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
+  .post-card:hover {
+    @apply transform -translate-y-1 shadow-md;
+  }
 
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out;
-}
+  .category-pill {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300;
+  }
 
-/* Nav link animations */
-.nav-link::after {
-  content: '';
-  display: block;
-  width: 0;
-  height: 2px;
-  @apply bg-primary;
-  transition: width .3s;
-}
+  .category-pill:hover {
+    @apply bg-primary text-white;
+  }
 
-.nav-link:hover::after {
-  width: 100%;
-}
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
 
-.nav-link.active::after {
-  width: 100%;
-}
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
 
-/* Card hover effects */
-.blog-post {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
 
-.blog-post:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px -5px rgba(138, 126, 181, 0.1);
-}
-
-/* Category pill animations */
-.category-pill {
-  transition: all 0.3s ease;
-}
-
-.category-pill:hover {
-  transform: translateY(-2px);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--background));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.5);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.7);
+  @keyframes slideUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
 }

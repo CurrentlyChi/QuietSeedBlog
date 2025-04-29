@@ -1,68 +1,66 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  username: varchar("username", { length: 50 }).notNull().unique(),
+  password: varchar("password", { length: 100 }).notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
+  avatarUrl: text("avatar_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  isAdmin: true,
+export const insertUserSchema = createInsertSchema(users).omit({ 
+  id: true,
+  createdAt: true,
 });
 
-// Categories for blog posts
+// Category schema
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  slug: text("slug").notNull().unique(),
+  name: varchar("name", { length: 50 }).notNull(),
+  slug: varchar("slug", { length: 50 }).notNull().unique(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertCategorySchema = createInsertSchema(categories).pick({
-  name: true,
-  slug: true,
+export const insertCategorySchema = createInsertSchema(categories).omit({ 
+  id: true,
+  createdAt: true,
 });
 
-// Blog posts
+// Post schema
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  slug: text("slug").notNull().unique(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
   content: text("content").notNull(),
   excerpt: text("excerpt").notNull(),
   imageUrl: text("image_url"),
-  publishedAt: timestamp("published_at").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
-  categoryId: integer("category_id").notNull(),
-  authorId: integer("author_id").notNull(),
+  publishedAt: timestamp("published_at").defaultNow().notNull(),
+  categoryId: serial("category_id").references(() => categories.id).notNull(),
+  authorId: serial("author_id").references(() => users.id).notNull(),
   featured: boolean("featured").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertPostSchema = createInsertSchema(posts).pick({
-  title: true,
-  slug: true,
-  content: true,
-  excerpt: true,
-  imageUrl: true,
-  publishedAt: true,
-  categoryId: true,
-  authorId: true,
-  featured: true,
+export const insertPostSchema = createInsertSchema(posts).omit({ 
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-// Define custom types for validation and use
+// Login schema
 export const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
 });
 
-// Export types
+// Type definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -73,8 +71,9 @@ export type Post = typeof posts.$inferSelect;
 export type InsertPost = z.infer<typeof insertPostSchema>;
 
 export type PostWithDetails = Post & {
-  category: Category;
-  author: Omit<User, "password">;
+  categoryName: string;
+  categorySlug: string;
+  authorName: string;
 };
 
 export type Login = z.infer<typeof loginSchema>;
