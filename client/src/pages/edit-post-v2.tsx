@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -47,8 +47,6 @@ const EditPost = () => {
   const postId = match ? parseInt(params.id, 10) : null;
   const [_, navigate] = useLocation();
   const { toast } = useToast();
-  // Categories are not used anymore, fixed to default
-
   // Get current date in YYYY-MM-DD format
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
