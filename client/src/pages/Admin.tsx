@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link, useRoute } from "wouter";
-import { useCurrentUser, usePosts } from "@/lib/hooks";
+import { useCurrentUser, usePosts, useSiteSettings, useUpdateSiteSettings } from "@/lib/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDate } from "@/lib/utils";
-import { loginSchema } from "@shared/schema";
+import { loginSchema, type SiteSettings } from "@shared/schema";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 
 export default function Admin() {
@@ -171,6 +173,55 @@ export default function Admin() {
     );
   }
   
+  // Site settings form
+  const { data: settings, isLoading: settingsLoading } = useSiteSettings();
+  const updateSettings = useUpdateSiteSettings();
+
+  // Create settings form schema
+  const settingsFormSchema = z.object({
+    tagline: z.string().min(10, {
+      message: "Tagline must be at least 10 characters.",
+    }).max(200, {
+      message: "Tagline must not be longer than 200 characters.",
+    }),
+  });
+
+  type SettingsFormValues = z.infer<typeof settingsFormSchema>;
+
+  // Settings form
+  const settingsForm = useForm<SettingsFormValues>({
+    resolver: zodResolver(settingsFormSchema),
+    defaultValues: {
+      tagline: settings?.tagline || "",
+    },
+  });
+
+  // Update form values when settings are loaded
+  useEffect(() => {
+    if (settings) {
+      settingsForm.reset({
+        tagline: settings.tagline,
+      });
+    }
+  }, [settings, settingsForm]);
+
+  // Submit settings form
+  const onSettingsSubmit = async (values: SettingsFormValues) => {
+    try {
+      await updateSettings.mutateAsync(values);
+      toast({
+        title: "Settings updated",
+        description: "Your site settings have been successfully updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update settings",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Admin dashboard
   return (
     <div className="animate-fade-in">
@@ -181,49 +232,109 @@ export default function Admin() {
         </Link>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage Posts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {postsLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <Skeleton key={i} className="h-16 w-full" />
-              ))}
-            </div>
-          ) : posts && posts.length > 0 ? (
-            <div className="space-y-4">
-              {posts.map(post => (
-                <div key={post.id} className="flex justify-between items-center p-3 border border-muted rounded-md">
-                  <div>
-                    <Link href={`/post/${post.slug}`} className="text-primary-foreground font-medium hover:text-primary transition-colors">
-                      {post.title}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(post.publishedAt)} · {post.featured ? "Featured" : "Regular"}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Link href={`/admin/edit/${post.id}`}>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </Link>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => deletePost(post.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+      <Tabs defaultValue="posts" className="mb-8">
+        <TabsList className="mb-4">
+          <TabsTrigger value="posts">Posts</TabsTrigger>
+          <TabsTrigger value="settings">Site Settings</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="posts">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Posts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {postsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-4">No posts found.</p>
-          )}
-        </CardContent>
-      </Card>
+              ) : posts && posts.length > 0 ? (
+                <div className="space-y-4">
+                  {posts.map(post => (
+                    <div key={post.id} className="flex justify-between items-center p-3 border border-muted rounded-md">
+                      <div>
+                        <Link href={`/post/${post.slug}`} className="text-primary-foreground font-medium hover:text-primary transition-colors">
+                          {post.title}
+                        </Link>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(post.publishedAt)} · {post.featured ? "Featured" : "Regular"}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Link href={`/admin/edit/${post.id}`}>
+                          <Button variant="outline" size="sm">Edit</Button>
+                        </Link>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => deletePost(post.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">No posts found.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="settings">
+          <Card>
+            <CardHeader>
+              <CardTitle>Site Settings</CardTitle>
+              <CardDescription>
+                Customize your blog settings and appearance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {settingsLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-full mb-2" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+              ) : (
+                <Form {...settingsForm}>
+                  <form onSubmit={settingsForm.handleSubmit(onSettingsSubmit)} className="space-y-6">
+                    <FormField
+                      control={settingsForm.control}
+                      name="tagline"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Blog Tagline</FormLabel>
+                          <FormDescription>
+                            This appears on your homepage and helps visitors understand what your blog is about
+                          </FormDescription>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Enter your blog tagline" 
+                              {...field} 
+                              className="min-h-[100px]"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button 
+                      type="submit" 
+                      disabled={updateSettings.isPending || !settingsForm.formState.isDirty}
+                    >
+                      {updateSettings.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </form>
+                </Form>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
