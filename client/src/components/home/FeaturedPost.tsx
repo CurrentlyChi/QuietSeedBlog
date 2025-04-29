@@ -13,14 +13,7 @@ export default function FeaturedPost() {
     return (
       <section className="mb-16 py-20 bg-[#F9F6FF]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-8">
-            <div className="w-full lg:w-1/2 relative">
-              <img 
-                src={fruitArtwork} 
-                alt="Artistic fruit illustration" 
-                className="max-w-full h-auto rounded-3xl shadow-lg"
-              />
-            </div>
+          <div className="flex flex-col lg:flex-row items-center gap-8">
             <div className="w-full lg:w-1/2 space-y-6">
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight">
                 Welcome to<br />
@@ -41,6 +34,13 @@ export default function FeaturedPost() {
                   </Link>
                 </Button>
               </div>
+            </div>
+            <div className="w-full lg:w-1/2 relative">
+              <img 
+                src={fruitArtwork} 
+                alt="Artistic fruit illustration" 
+                className="max-w-full h-auto rounded-3xl shadow-lg"
+              />
             </div>
           </div>
         </div>
