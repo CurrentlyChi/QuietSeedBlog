@@ -1,6 +1,6 @@
 import { useRoute } from "wouter";
 import { useState } from "react";
-import { usePostsByCategory } from "@/lib/hooks";
+import { usePostsByCategory, usePosts } from "@/lib/hooks";
 import BlogPostLine from "@/components/home/BlogPostLine";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,14 @@ export default function CategoryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
   
-  const { data: posts = [], isLoading, error } = usePostsByCategory(categorySlug);
+  // Use appropriate hook based on category
+  const { data: categoryPosts = [], isLoading: categoryLoading, error: categoryError } = usePostsByCategory(categorySlug);
+  const { data: allPosts = [], isLoading: allPostsLoading, error: allPostsError } = usePosts();
+  
+  // Select data source based on category
+  const posts = categorySlug === 'all' ? allPosts : categoryPosts;
+  const isLoading = categorySlug === 'all' ? allPostsLoading : categoryLoading;
+  const error = categorySlug === 'all' ? allPostsError : categoryError;
   
   const totalPages = Math.ceil(posts.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;

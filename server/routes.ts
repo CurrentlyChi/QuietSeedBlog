@@ -135,13 +135,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Special case for 'all' category - return all posts
       if (category === 'all') {
+        console.log("Handling 'all' category request - fetching all posts");
         const posts = await storage.getAllPosts();
+        console.log(`Found ${posts.length} posts for 'all' category`);
         return res.json(posts);
       }
       
       const posts = await storage.getPostsByCategory(category);
       return res.json(posts);
     } catch (error) {
+      console.error("Error fetching posts by category:", error);
       return res.status(500).json({ message: "Failed to fetch posts by category" });
     }
   });
