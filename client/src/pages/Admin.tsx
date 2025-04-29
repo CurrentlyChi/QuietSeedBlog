@@ -199,21 +199,28 @@ export default function Admin() {
   // Update form values when settings are loaded
   useEffect(() => {
     if (settings) {
+      console.log("Resetting form with settings:", settings);
       settingsForm.reset({
         tagline: settings.tagline,
       });
     }
-  }, [settings, settingsForm]);
+  }, [settings]); // Remove settingsForm from dependencies to prevent infinite loops
 
   // Submit settings form
   const onSettingsSubmit = async (values: SettingsFormValues) => {
     try {
+      console.log("Submitting settings:", values);
       await updateSettings.mutateAsync(values);
-      toast({
-        title: "Settings updated",
-        description: "Your site settings have been successfully updated.",
-      });
+      
+      // Add a slight delay to ensure the cache is invalidated properly
+      setTimeout(() => {
+        toast({
+          title: "Settings updated",
+          description: "Your site settings have been successfully updated.",
+        });
+      }, 300);
     } catch (error) {
+      console.error("Error updating settings:", error);
       toast({
         title: "Error",
         description: "Failed to update settings",

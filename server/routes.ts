@@ -159,9 +159,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update site settings
   app.put("/api/settings", async (req: Request, res: Response) => {
     try {
+      console.log("Received settings update request with body:", req.body);
+      
+      // Validate input has tagline
+      if (!req.body || typeof req.body.tagline !== 'string') {
+        console.error("Invalid settings data received:", req.body);
+        return res.status(400).json({ 
+          message: "Invalid settings data. Tagline must be a string." 
+        });
+      }
+      
+      // Process the update
       const updatedSettings = await storage.updateSiteSettings(req.body);
+      console.log("Settings updated successfully:", updatedSettings);
+      
       return res.json(updatedSettings);
     } catch (error) {
+      console.error("Error updating settings:", error);
       return res.status(500).json({ message: "Failed to update site settings" });
     }
   });

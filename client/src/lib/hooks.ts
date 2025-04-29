@@ -137,17 +137,11 @@ export function useUpdateSiteSettings() {
   
   return useMutation({
     mutationFn: async (settings: Partial<SiteSettings>) => {
-      const response = await fetch("/api/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings)
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update settings");
-      }
+      const response = await apiRequest("PUT", "/api/settings", settings);
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate both settings and any component that might use settings
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
     }
   });
