@@ -14,12 +14,6 @@ export default function Footer() {
               A space for mindful reflections, gentle guides, and thoughtful stories about slow living in a fast-paced world.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-primary hover:text-primary-foreground transition-colors" aria-label="Instagram">
-                <i className="ri-instagram-line text-xl"></i>
-              </a>
-              <a href="#" className="text-primary hover:text-primary-foreground transition-colors" aria-label="Pinterest">
-                <i className="ri-pinterest-line text-xl"></i>
-              </a>
               <a href="#" className="text-primary hover:text-primary-foreground transition-colors" aria-label="Twitter">
                 <i className="ri-twitter-x-line text-xl"></i>
               </a>
@@ -49,11 +43,7 @@ export default function Footer() {
                   Story
                 </Link>
               </li>
-              <li>
-                <Link href="/category/philosophy" className="text-muted-foreground hover:text-primary transition-colors">
-                  Philosophy
-                </Link>
-              </li>
+
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About
