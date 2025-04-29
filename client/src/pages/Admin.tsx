@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link, useRoute } from "wouter";
 import { useCurrentUser, usePosts, useSiteSettings, useUpdateSiteSettings, usePageContent, useUpdatePageContent } from "@/lib/hooks";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -395,14 +396,16 @@ export default function Admin() {
                         <FormItem>
                           <FormLabel>Page Content</FormLabel>
                           <FormDescription>
-                            The main content of the About page (supports HTML formatting)
+                            The main content of the About page (use the toolbar to format text)
                           </FormDescription>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Enter your page content" 
-                              {...field} 
-                              className="min-h-[300px] font-mono text-sm"
-                            />
+                            <div className="rich-editor-wrapper border rounded-md overflow-hidden">
+                              <RichTextEditor 
+                                value={field.value || ''}
+                                onChange={field.onChange}
+                                placeholder="Enter your page content"
+                              />
+                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
