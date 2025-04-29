@@ -150,7 +150,7 @@ export function useUpdateSiteSettings() {
 // Custom hook for fetching page content
 export function usePageContent(pageId: string): QueryResult<PageContent> {
   const { data, isLoading, error } = useQuery<PageContent>({
-    queryKey: ["/api/pages", pageId],
+    queryKey: [`/api/pages/${pageId}`],
     enabled: !!pageId
   });
   
@@ -168,7 +168,7 @@ export function useUpdatePageContent() {
     },
     onSuccess: (_, variables) => {
       // Invalidate the page content query
-      queryClient.invalidateQueries({ queryKey: ["/api/pages", variables.pageId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pages/${variables.pageId}`] });
     }
   });
 }
