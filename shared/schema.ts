@@ -1,6 +1,7 @@
-import { pgTable, text, serial, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, varchar, boolean, json, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // User schema
 export const users = pgTable("users", {
@@ -85,25 +86,61 @@ export type PostWithDetails = Post & {
 
 export type Login = z.infer<typeof loginSchema>;
 
-// Site settings schema
-export interface SiteSettings {
-  tagline: string;
-}
+// Define relationships
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}));
 
-export const defaultSiteSettings: SiteSettings = {
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  posts: many(posts),
+}));
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, {
+    fields: [posts.authorId],
+    references: [users.id],
+  }),
+  category: one(categories, {
+    fields: [posts.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+// Site settings schema
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
+  tagline: text("tagline").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
+
+export const defaultSiteSettings: InsertSiteSettings = {
   tagline: "A personal space for mindful reflections and thoughtful stories about slow living."
 };
 
-export interface PageContent {
-  id: string;
-  title: string;
-  content: string;
-  lastUpdated: Date;
-}
+// Page content schema
+export const pageContents = pgTable("page_contents", {
+  id: varchar("id", { length: 50 }).primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+});
 
-export type InsertPageContent = Omit<PageContent, 'lastUpdated'> & { lastUpdated?: Date };
+export const insertPageContentSchema = createInsertSchema(pageContents).omit({
+  lastUpdated: true,
+});
 
-export const defaultAboutPageContent = {
+export type PageContent = typeof pageContents.$inferSelect;
+export type InsertPageContent = z.infer<typeof insertPageContentSchema>;
+
+export const defaultAboutPageContent: InsertPageContent = {
   id: 'about',
   title: 'About The Quiet Seed',
   content: `<div>
@@ -116,6 +153,5 @@ export const defaultAboutPageContent = {
 <p>Hi, I'm Mai Chi. I'm the creator and writer behind The Quiet Seed. With a background in mindfulness practices and a passion for thoughtful writing, I started this blog as a way to share my journey toward a more intentional life.</p>
 <p>When I'm not writing, you can find me tending to my small garden, reading books on slow living, or enjoying a cup of tea while watching the rain. I believe in the power of slowing down and paying attention to the present moment.</p>
 <p>I'm so glad you're here, and I hope The Quiet Seed can be a small sanctuary of calm in your digital day.</p>
-</div>`,
-  lastUpdated: new Date()
+</div>`
 };

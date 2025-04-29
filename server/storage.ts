@@ -3,11 +3,17 @@ import {
   type Category, type InsertCategory, 
   type Post, type InsertPost, 
   type PostWithDetails,
-  type SiteSettings,
+  type SiteSettings, type InsertSiteSettings,
   type PageContent, type InsertPageContent,
   defaultSiteSettings,
-  defaultAboutPageContent
+  defaultAboutPageContent,
+  users, categories, posts, siteSettings, pageContents
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, like, desc, or, and, sql } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
 export interface IStorage {
   // User methods
