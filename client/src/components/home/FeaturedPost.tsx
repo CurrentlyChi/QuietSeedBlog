@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { useFeaturedPost, useSiteSettings } from "@/lib/hooks";
+import { useFeaturedPost, useSiteSettings, useCurrentUser } from "@/lib/hooks";
 import { formatDate, getReadingTime } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,10 @@ import fruitArtwork from "@/assets/fruit-art.svg";
 export default function FeaturedPost() {
   const { data: featuredPost, isLoading: loadingPost, error: postError } = useFeaturedPost();
   const { data: settings, isLoading: loadingSettings } = useSiteSettings();
+  const { data: userData } = useCurrentUser();
+  
+  // Determine where the "Write a Post" button should link to based on authentication
+  const writePostLink = userData?.isAuthenticated ? "/admin" : "/admin"; // Both go to admin where login happens
   
   // Hero section with fruit art when no featured post is available
   if (!featuredPost) {
@@ -25,7 +29,7 @@ export default function FeaturedPost() {
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button asChild size="lg">
-                  <Link href="/admin">
+                  <Link href={writePostLink}>
                     Write a Post
                   </Link>
                 </Button>
