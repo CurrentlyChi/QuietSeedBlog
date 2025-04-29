@@ -128,8 +128,21 @@ export class MemStorage implements IStorage {
   }
 
   async getFeaturedPost(): Promise<PostWithDetails | undefined> {
-    const featuredPost = Array.from(this.posts.values()).find(post => post.featured === true || post.featured === "true");
-    if (!featuredPost) return undefined;
+    // Check if we have any posts first
+    const posts = Array.from(this.posts.values());
+    if (posts.length === 0) {
+      return undefined;
+    }
+    
+    // First try to find a featured post
+    const featuredPost = posts.find(post => post.featured === true || post.featured === "true");
+    if (!featuredPost) {
+      // If no featured post, get the most recent post
+      const sortedPosts = posts.sort((a, b) => 
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      );
+      return sortedPosts.length > 0 ? this.getPostWithDetails(sortedPosts[0].slug) : undefined;
+    }
     
     return this.getPostWithDetails(featuredPost.slug);
   }
@@ -208,64 +221,12 @@ export class MemStorage implements IStorage {
       const categoryData = [
         { name: "Reflection", slug: "reflection", description: "Thoughtful reflections on mindful living" },
         { name: "How-To", slug: "how-to", description: "Practical guides for mindful practices" },
-        { name: "Story", slug: "story", description: "Personal stories of transformation" },
-        { name: "Philosophy", slug: "philosophy", description: "Exploring philosophical aspects of mindfulness" }
+        { name: "Story", slug: "story", description: "Personal stories of transformation" }
       ];
       
       const categories = await Promise.all(categoryData.map(cat => this.createCategory(cat)));
       
-      // Create posts
-      const post1: InsertPost = {
-        title: "Finding Stillness in a Busy World",
-        slug: "finding-stillness-in-a-busy-world",
-        content: "In the hustle of modern life, we often forget to pause and listen to the quietness within. The constant notifications, endless to-do lists, and societal pressure to always be productive can leave us feeling disconnected from ourselves and the world around us.",
-        excerpt: "In the hustle of modern life, we often forget to pause and listen to the quietness within. This reflection explores how to create moments of tranquility even on the busiest days...",
-        imageUrl: "https://images.unsplash.com/photo-1598901847919-b95dd0fabbb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
-        publishedAt: new Date("2023-06-12"),
-        categoryId: categories[0].id,
-        authorId: author.id,
-        featured: "true"
-      };
-      await this.createPost(post1);
-      
-      const post2: InsertPost = {
-        title: "5 Simple Morning Rituals for Inner Peace",
-        slug: "5-simple-morning-rituals",
-        content: "Morning routines set the tone for your entire day. When we begin our day mindfully, we're more likely to carry that sense of calm and intention throughout our hours.",
-        excerpt: "Start your day with intention and calm. These five morning practices take just minutes but can transform your entire day...",
-        imageUrl: "https://images.unsplash.com/photo-1532686942355-a422d8144d29?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        publishedAt: new Date("2023-05-28"),
-        categoryId: categories[1].id,
-        authorId: author.id,
-        featured: "false"
-      };
-      await this.createPost(post2);
-      
-      const post3: InsertPost = {
-        title: "The Forgotten Art of Letter Writing",
-        slug: "forgotten-art-of-letter-writing",
-        content: "In our digital age of instant messages and quick emails, the art of letter writing has become increasingly rare. Yet there's something uniquely meaningful about putting pen to paper.",
-        excerpt: "In a world of instant messages, discover why putting pen to paper can become a profound mindfulness practice and deepen your connections...",
-        imageUrl: "https://images.unsplash.com/photo-1635445525049-e4bd640a8850?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        publishedAt: new Date("2023-05-15"),
-        categoryId: categories[3].id,
-        authorId: author.id,
-        featured: "false"
-      };
-      await this.createPost(post3);
-      
-      const post4: InsertPost = {
-        title: "What I Learned From a Month Without Internet",
-        slug: "month-without-internet",
-        content: "Last summer, I made a decision that many would consider radical: I spent an entire month in a remote countryside cottage with no internet connection.",
-        excerpt: "A personal journey through thirty days of digital detox in a remote countryside cottage changed my relationship with technology forever...",
-        imageUrl: "https://images.unsplash.com/photo-1472157592780-9e5265f17f8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        publishedAt: new Date("2023-05-05"),
-        categoryId: categories[2].id,
-        authorId: author.id,
-        featured: "false"
-      };
-      await this.createPost(post4);
+      // No pre-loaded posts as requested
       
     } catch (error) {
       console.error("Error seeding data:", error);
