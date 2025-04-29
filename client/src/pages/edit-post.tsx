@@ -57,7 +57,11 @@ const EditPost = () => {
   const { toast } = useToast();
   const categoryOptions = useCategoryOptions();
 
-  // Set up the form
+  // Get current date in YYYY-MM-DD format
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  
+  // Set up the form with simple string date
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,7 +70,7 @@ const EditPost = () => {
       slug: "",
       excerpt: "",
       imageUrl: "",
-      publishedAt: new Date().toISOString(), // Use ISO string for date
+      publishedAt: formattedDate, // Simple YYYY-MM-DD string
       categoryId: 1, // Reflection category
       authorId: 1, // Admin user
       featured: false, // Boolean value
@@ -134,20 +138,19 @@ const EditPost = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    // Since our schema now works with strings for dates, we just need to ensure the values
-    // are properly formatted
+    // We're keeping this super simple now - no date conversions
     const processedValues = {
       ...values,
-      // For publishedAt, make sure it's a valid string
-      publishedAt: typeof values.publishedAt === 'string' 
-        ? values.publishedAt 
-        : new Date().toISOString(),
+      // The date is already a string from the text input
+      // Just make sure it's in YYYY-MM-DD format (match pattern)
+      publishedAt: values.publishedAt,
       // Ensure featured is a boolean
       featured: !!values.featured
     };
     
     // Log the values to help with debugging
     console.log("Form values before submission:", processedValues);
+    console.log("publishedAt value:", processedValues.publishedAt);
     console.log("publishedAt type:", typeof processedValues.publishedAt);
     
     try {
@@ -254,28 +257,22 @@ const EditPost = () => {
                   )}
                 />
 
+                {/* Super simplified date input */}
                 <FormField
                   control={form.control}
                   name="publishedAt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Publish Date</FormLabel>
+                      <FormLabel>Publish Date (YYYY-MM-DD)</FormLabel>
                       <FormControl>
                         <Input 
-                          type="datetime-local" 
-                          value={
-                            typeof field.value === 'string' 
-                              ? new Date(field.value).toISOString().slice(0, 16)
-                              : new Date().toISOString().slice(0, 16)
-                          }
-                          onChange={(e) => {
-                            // Just store the ISO string
-                            field.onChange(new Date(e.target.value).toISOString());
-                          }}
+                          type="text" 
+                          placeholder="YYYY-MM-DD" 
+                          {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        Select the publish date and time
+                        Enter date in YYYY-MM-DD format (e.g., 2025-04-29)
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
