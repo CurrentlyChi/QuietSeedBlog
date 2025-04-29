@@ -34,7 +34,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 
-// Create a simplified form schema that doesn't transform date, just validates presence
+// UPDATED VERSION v2 - Create a simplified form schema that doesn't transform date, just validates presence
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
