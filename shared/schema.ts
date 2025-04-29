@@ -48,10 +48,17 @@ export const posts = pgTable("posts", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertPostSchema = createInsertSchema(posts).omit({ 
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+// Create a custom insert schema that handles publishedAt as a string
+export const insertPostSchema = z.object({
+  title: z.string().min(1),
+  slug: z.string().min(1),
+  content: z.string().min(1),
+  excerpt: z.string().min(1),
+  imageUrl: z.string().optional().nullable(),
+  publishedAt: z.string().min(1),  // Accept string format
+  categoryId: z.number().int().positive(),
+  authorId: z.number().int().positive(),
+  featured: z.boolean().default(false),
 });
 
 // Login schema

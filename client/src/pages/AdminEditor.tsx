@@ -333,10 +333,17 @@ export default function AdminEditor() {
                   name="publishedAt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Publish Date</FormLabel>
+                      <FormLabel>Publish Date (YYYY-MM-DD)</FormLabel>
                       <FormControl>
-                        <Input type="datetime-local" {...field} />
+                        <Input 
+                          type="text" 
+                          placeholder="YYYY-MM-DD" 
+                          {...field} 
+                        />
                       </FormControl>
+                      <FormDescription>
+                        Enter date in YYYY-MM-DD format (e.g., 2025-04-29)
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -11,7 +11,9 @@ import BlogPost from "@/pages/BlogPost";
 import CategoryPage from "@/pages/CategoryPage";
 import About from "@/pages/About";
 import Admin from "@/pages/Admin";
-import AdminEditor from "@/pages/AdminEditor";
+// Import v2 editor and also AdminEditor as a fallback
+import EditPost from "@/pages/edit-post-v2";
+import AdminEditor from "@/pages/AdminEditor"; 
 import AuthPage from "@/pages/auth-page";
 import Layout from "@/components/layout/Layout";
 
@@ -25,8 +27,8 @@ function Router() {
         <Route path="/about" component={About} />
         <Route path="/auth" component={AuthPage} />
         <ProtectedRoute path="/admin" component={Admin} />
-        <ProtectedRoute path="/admin/edit/:id" component={AdminEditor} />
-        <ProtectedRoute path="/admin/new" component={AdminEditor} />
+        <ProtectedRoute path="/admin/edit/:id" component={EditPost} />
+        <ProtectedRoute path="/admin/new" component={EditPost} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
