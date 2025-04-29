@@ -65,7 +65,7 @@ export default function Header() {
         {/* Mobile menu button */}
         <button 
           onClick={isMobileMenuOpen ? closeMobileMenu : openMobileMenu}
-          className="lg:hidden text-white bg-blue-800 p-2 rounded-md focus:outline-none"
+          className="md:hidden text-white bg-blue-800 p-2 rounded-md focus:outline-none"
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {isMobileMenuOpen ? (
@@ -76,7 +76,7 @@ export default function Header() {
         </button>
         
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8 animate-fade-in">
+        <nav className="hidden md:flex items-center space-x-6 ml-auto animate-fade-in">
           <Link 
             href="/" 
             className="nav-link text-white hover:text-yellow-200 transition-colors text-xl font-bold"
@@ -152,7 +152,7 @@ export default function Header() {
       </div>
       
       {/* Mobile Navigation */}
-      <nav className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-gradient-to-r from-blue-700 to-purple-800 py-4 shadow-md animate-slide-up lg:hidden`}>
+      <nav className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-gradient-to-r from-blue-700 to-purple-800 py-4 shadow-md animate-slide-up md:hidden`}>
         <div className="container mx-auto px-4 flex flex-col space-y-4">
           <Link 
             href="/" 
