@@ -58,9 +58,14 @@ export default function CategoryPage() {
   }
   
   // Find category name from the first post or display default
-  const categoryName = posts.length > 0 
-    ? posts[0].categoryName 
-    : categorySlug?.charAt(0).toUpperCase() + categorySlug?.slice(1);
+  let categoryName;
+  if (categorySlug === 'all') {
+    categoryName = 'All Posts';
+  } else {
+    categoryName = posts.length > 0 
+      ? posts[0].categoryName 
+      : categorySlug?.charAt(0).toUpperCase() + categorySlug?.slice(1);
+  }
   
   return (
     <div className="container mx-auto py-12 px-4">
@@ -69,7 +74,9 @@ export default function CategoryPage() {
         <p className="text-muted-foreground max-w-2xl mx-auto">
           {posts.length === 0 ? 
             "No posts in this category yet. Check back soon for new content!" : 
-            `Explore our collection of ${posts.length} posts about ${categoryName?.toLowerCase()}`
+            categorySlug === 'all' ?
+              `Explore our complete collection of ${posts.length} posts` :
+              `Explore our collection of ${posts.length} posts about ${categoryName?.toLowerCase()}`
           }
         </p>
       </header>

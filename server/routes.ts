@@ -132,6 +132,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/category/:category", async (req: Request, res: Response) => {
     try {
       const category = req.params.category;
+      
+      // Special case for 'all' category - return all posts
+      if (category === 'all') {
+        const posts = await storage.getAllPosts();
+        return res.json(posts);
+      }
+      
       const posts = await storage.getPostsByCategory(category);
       return res.json(posts);
     } catch (error) {
