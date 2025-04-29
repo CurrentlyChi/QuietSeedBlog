@@ -7,6 +7,7 @@ import BlogPostCard from "@/components/home/BlogPostCard";
 import Newsletter from "@/components/home/Newsletter";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import SearchBar from "@/components/search-bar";
 
 export default function Home() {
   const [location] = useLocation();
@@ -105,6 +106,7 @@ export default function Home() {
       {!searchQuery && (
         <>
           <FeaturedPost />
+          <SearchBar className="my-12 max-w-4xl mx-auto" />
           <CategoryFilter />
         </>
       )}
