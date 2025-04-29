@@ -212,12 +212,9 @@ export class MemStorage implements IStorage {
   }
 
   async getPostsByCategory(categorySlug: string): Promise<Post[]> {
-    const category = await this.getCategoryBySlug(categorySlug);
-    if (!category) return [];
-
-    return Array.from(this.posts.values())
-      .filter(post => post.categoryId === category.id)
-      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    // Since categories are removed, return all posts regardless of category
+    console.log("getPostsByCategory called with removed categories, returning all posts");
+    return this.getAllPosts();
   }
 
   async createPost(post: InsertPost): Promise<Post> {
@@ -236,7 +233,7 @@ export class MemStorage implements IStorage {
         : typeof post.publishedAt === 'string' 
           ? new Date(post.publishedAt) 
           : new Date(),
-      categoryId: typeof post.categoryId === 'number' ? post.categoryId : 4, // Default to Mindfulness (ID: 4)
+      categoryId: 1, // Fixed default value since categories are removed
       authorId: typeof post.authorId === 'number' ? post.authorId : 1,
       featured: typeof post.featured === 'boolean' 
         ? post.featured 
@@ -366,14 +363,8 @@ export class MemStorage implements IStorage {
       };
       const author = await this.createUser(authorUser);
       
-      // Create categories
-      const categoryData = [
-        { name: "Reflection", slug: "reflection", description: "Thoughtful reflections on mindful living" },
-        { name: "How-To", slug: "how-to", description: "Practical guides for mindful practices" },
-        { name: "Story", slug: "story", description: "Personal stories of transformation" }
-      ];
-      
-      const categories = await Promise.all(categoryData.map(cat => this.createCategory(cat)));
+      // Categories removed
+      console.log("Categories are removed from the application");
       
       // No pre-loaded posts as requested
       
@@ -502,13 +493,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPostsByCategory(categorySlug: string): Promise<Post[]> {
-    const category = await this.getCategoryBySlug(categorySlug);
-    if (!category) return [];
-    
-    return db.select()
-      .from(posts)
-      .where(eq(posts.categoryId, category.id))
-      .orderBy(desc(posts.publishedAt));
+    // Since categories are removed, return all posts regardless of category
+    console.log("getPostsByCategory called with removed categories, returning all posts");
+    return this.getAllPosts();
   }
 
   async createPost(post: InsertPost): Promise<Post> {
@@ -518,10 +505,9 @@ export class DatabaseStorage implements IStorage {
       postData.publishedAt = new Date(postData.publishedAt);
     }
     
-    // Set default categoryId to Mindfulness (4) if not provided
-    if (!postData.categoryId) {
-      postData.categoryId = 4; // Default to Mindfulness category
-    }
+    // Set default categoryId to 1 since categories are removed
+    postData.categoryId = 1; // Default value for compatibility with schema
+    console.log("Setting categoryId to 1 for compatibility");
     
     const [newPost] = await db.insert(posts).values(postData).returning();
     return newPost;
@@ -711,19 +697,8 @@ export class DatabaseStorage implements IStorage {
         await this.createUser(authorUser);
       }
       
-      // Create default categories if they don't exist
-      const categoryData = [
-        { name: "Mindfulness", slug: "mindfulness", description: "Thoughtful practices for mindful living" },
-        { name: "How-To", slug: "how-to", description: "Practical guides for mindful practices" },
-        { name: "Story", slug: "story", description: "Personal stories of transformation" }
-      ];
-      
-      for (const cat of categoryData) {
-        const existing = await this.getCategoryBySlug(cat.slug);
-        if (!existing) {
-          await this.createCategory(cat);
-        }
-      }
+      // Categories removed
+      console.log("Categories are removed from the application");
       
       // Ensure we have site settings
       await this.getSiteSettings();
