@@ -91,9 +91,6 @@ export default function BlogPost() {
           <Link href="/" className="text-primary hover:text-primary-foreground transition-colors">
             ← Back to Home
           </Link>
-          <Link href={`/category/${post.categorySlug}`} className="text-primary hover:text-primary-foreground transition-colors">
-            More in {post.categoryName} →
-          </Link>
         </div>
       </div>
       

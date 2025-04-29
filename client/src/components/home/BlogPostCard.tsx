@@ -25,12 +25,6 @@ export default function BlogPostCard({ post }: BlogPostCardProps) {
           alt={post.title} 
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
         />
-        <Link 
-          href={`/category/${post.categorySlug}`}
-          className="absolute top-3 left-3 category-pill px-3 py-1 bg-primary/80 text-white rounded-full text-xs"
-        >
-          {post.categoryName}
-        </Link>
       </div>
       
       <div className="p-6">

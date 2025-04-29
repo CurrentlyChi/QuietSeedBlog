@@ -22,12 +22,6 @@ export default function BlogPostLine({ post }: BlogPostLineProps) {
       <div className="flex items-start space-x-4">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-2">
-            <Link 
-              href={`/category/${post.categorySlug}`}
-              className="text-xs px-2 py-0.5 bg-primary/10 text-primary-foreground rounded-md hover:bg-primary/20 transition-colors"
-            >
-              {post.categoryName}
-            </Link>
             <span className="text-xs text-muted-foreground">{formatDate(post.publishedAt)}</span>
           </div>
           

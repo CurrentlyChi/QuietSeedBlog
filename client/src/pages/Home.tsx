@@ -50,27 +50,21 @@ export default function Home() {
     setCurrentPage(1);
   }, [categorySlug, searchQuery]);
   
-  // Process posts data to include category name for display
+  // Process posts data to include author name for display
   const processedPosts = paginatedPosts.map(post => {
     // For posts coming directly from the API (without joined data)
-    if (!post.categoryName && post.categoryId) {
-      // Since we don't have access to categories directly, use default values
+    if (!post.authorName) {
       return {
         ...post,
-        categoryName: "Reflection", // Default to Reflection since it's our first category
-        categorySlug: "reflection",
         authorName: "Admin" // Default author
       };
     }
     
     // For posts with properly joined data
-    const category = post.category || { name: "Category", slug: "category" };
     const author = post.author || { username: "Author" };
     
     return {
       ...post,
-      categoryName: post.categoryName || category.name,
-      categorySlug: post.categorySlug || category.slug,
       authorName: post.authorName || author.username
     };
   });

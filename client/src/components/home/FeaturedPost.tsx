@@ -75,11 +75,6 @@ export default function FeaturedPost() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-8 text-white">
-              {post?.categorySlug && post?.categoryName && (
-                <Link href={`/category/${post.categorySlug}`} className="category-pill inline-block px-3 py-1 bg-primary/80 rounded-full text-xs mb-3">
-                  {post.categoryName}
-                </Link>
-              )}
               <Link href={`/post/${post?.slug || ''}` }>
                 <h2 className="font-serif text-3xl md:text-4xl font-bold mb-2">{post?.title || "Untitled Post"}</h2>
               </Link>
