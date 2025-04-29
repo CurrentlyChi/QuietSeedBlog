@@ -1,9 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPostSchema } from "@shared/schema";
+import { insertPostSchema, InsertUser } from "@shared/schema";
 import { z } from "zod";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
@@ -219,6 +219,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating page content:", error);
       return res.status(500).json({ message: "Failed to update page content" });
+    }
+  });
+
+  // Update user credentials (for admin only)
+  app.put("/api/user/:id", async (req: Request, res: Response) => {
+    try {
+      // Ensure user is authenticated and is admin
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "You must be logged in to update user information" });
+      }
+      
+      // Check if user is admin
+      const currentUser = req.user as any;
+      if (!currentUser?.isAdmin) {
+        return res.status(403).json({ message: "Only administrators can update user information" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      // Create schema for updating user
+      const updateUserSchema = z.object({
+        username: z.string().min(3).optional(),
+        password: z.string().min(6).optional(),
+        name: z.string().min(2).optional(),
+      });
+      
+      // Validate the request body
+      const validatedData = updateUserSchema.parse(req.body);
+      
+      // If password is being updated, hash it
+      if (validatedData.password) {
+        validatedData.password = await hashPassword(validatedData.password);
+      }
+      
+      const updatedUser = await storage.updateUser(id, validatedData);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove password from the response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      return res.json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid user data", 
+          errors: error.errors 
+        });
+      }
+      console.error("Error updating user:", error);
+      return res.status(500).json({ message: "Failed to update user" });
     }
   });
 
