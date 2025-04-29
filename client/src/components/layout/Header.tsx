@@ -84,9 +84,9 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className="nav-link bg-primary text-white font-medium px-4 py-2 rounded-md shadow-sm hover:bg-primary/90 transition-colors"
+            className="nav-link bg-green-500 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-green-600 transition-colors border-2 border-yellow-400 animate-pulse-scale"
           >
-            Blog
+            BLOG
           </Link>
           <Link 
             href="/about" 
@@ -97,11 +97,11 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="bg-primary text-white hover:bg-primary/80 transition-colors flex items-center p-3 rounded-lg shadow-md relative animate-pulse"
+            className="bg-red-600 text-white transition-colors flex items-center p-3 rounded-lg shadow-lg relative animate-pulse-scale border-2 border-yellow-400"
             aria-label="Search"
           >
-            <SearchIcon className="h-7 w-7" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">!</span>
+            <SearchIcon className="h-8 w-8" />
+            <span className="absolute -top-3 -right-3 bg-yellow-400 text-red-600 text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-red-600 shadow-md">!</span>
           </button>
           
           {isSearchOpen && (
@@ -162,9 +162,9 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className="bg-primary text-white font-medium py-2 px-4 rounded-md w-full flex justify-center mb-2"
+            className="bg-green-500 text-white font-bold text-xl py-3 px-6 rounded-md w-full flex justify-center shadow-md border-2 border-yellow-400 animate-pulse-scale"
           >
-            Blog
+            BLOG
           </Link>
           <Link 
             href="/about" 
@@ -175,11 +175,11 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="flex items-center space-x-2 bg-primary text-white p-3 rounded-md w-full transition-colors shadow-md relative animate-pulse"
+            className="flex items-center justify-center space-x-3 bg-red-600 text-white p-4 rounded-md w-full transition-colors shadow-lg relative animate-bounce-attention border-2 border-yellow-400"
           >
-            <SearchIcon className="h-6 w-6" />
-            <span className="font-bold">SEARCH HERE</span>
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">!</span>
+            <SearchIcon className="h-7 w-7" />
+            <span className="font-bold text-xl">SEARCH HERE</span>
+            <span className="absolute -top-3 -right-3 bg-yellow-400 text-red-600 text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-red-600 shadow-md">!</span>
           </button>
           
           {userData?.isAuthenticated ? (

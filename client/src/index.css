@@ -66,6 +66,26 @@
 }
 
 @layer components {
+  /* Custom animations */
+  @keyframes pulse-scale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .animate-pulse-scale {
+    animation: pulse-scale 1s infinite;
+  }
+
+  @keyframes attention-bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+  
+  .animate-bounce-attention {
+    animation: attention-bounce 2s infinite;
+  }
+
   .font-handwritten {
     font-family: 'Dancing Script', cursive;
   }
