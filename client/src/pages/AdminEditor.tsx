@@ -64,7 +64,7 @@ export default function AdminEditor() {
       excerpt: "",
       imageUrl: "",
       publishedAt: new Date().toISOString(),
-      categoryId: 0,
+      categoryId: 4, // Default to 'Mindfulness' category
       authorId: 0,
       featured: false
     }

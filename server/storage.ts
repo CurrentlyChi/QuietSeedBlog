@@ -237,7 +237,7 @@ export class MemStorage implements IStorage {
         : typeof post.publishedAt === 'string' 
           ? new Date(post.publishedAt) 
           : new Date(),
-      categoryId: typeof post.categoryId === 'number' ? post.categoryId : 1,
+      categoryId: typeof post.categoryId === 'number' ? post.categoryId : 4, // Default to Mindfulness (ID: 4)
       authorId: typeof post.authorId === 'number' ? post.authorId : 1,
       featured: typeof post.featured === 'boolean' 
         ? post.featured 
@@ -518,6 +518,11 @@ export class DatabaseStorage implements IStorage {
     const postData: any = {...post};
     if (typeof postData.publishedAt === 'string') {
       postData.publishedAt = new Date(postData.publishedAt);
+    }
+    
+    // Set default categoryId to Mindfulness (4) if not provided
+    if (!postData.categoryId) {
+      postData.categoryId = 4; // Default to Mindfulness category
     }
     
     const [newPost] = await db.insert(posts).values(postData).returning();
