@@ -13,8 +13,8 @@ export default function FeaturedPost() {
     return (
       <section className="mb-16 py-20 bg-[#F9F6FF]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
-            <div className="w-full lg:w-1/2 space-y-6">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="w-full md:w-1/2 space-y-6">
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight">
                 Welcome to<br />
                 <span className="text-primary font-handwritten">The Quiet Seed</span>
@@ -35,7 +35,7 @@ export default function FeaturedPost() {
                 </Button>
               </div>
             </div>
-            <div className="w-full lg:w-1/2 relative">
+            <div className="w-full md:w-1/2 relative">
               <img 
                 src={fruitArtwork} 
                 alt="Artistic fruit illustration" 
