@@ -93,3 +93,29 @@ export interface SiteSettings {
 export const defaultSiteSettings: SiteSettings = {
   tagline: "A personal space for mindful reflections and thoughtful stories about slow living."
 };
+
+export interface PageContent {
+  id: string;
+  title: string;
+  content: string;
+  lastUpdated: Date;
+}
+
+export type InsertPageContent = Omit<PageContent, 'lastUpdated'> & { lastUpdated?: Date };
+
+export const defaultAboutPageContent = {
+  id: 'about',
+  title: 'About The Quiet Seed',
+  content: `<div>
+<p>Welcome to The Quiet Seed, a personal space dedicated to mindful reflections and thoughtful stories about finding balance in our fast-paced world.</p>
+<p>This blog was created as a digital garden where ideas can grow slowly and organically. In a world of constant notifications and endless scrolling, The Quiet Seed offers a moment to pause, reflect, and appreciate the smaller moments that make life meaningful.</p>
+<p>Here you'll find essays on mindfulness, personal growth, and the art of slow living. Each post is written with care and intention, focusing on quality over quantity.</p>
+</div>
+<h2>About the Author</h2>
+<div>
+<p>Hi, I'm Mai Chi. I'm the creator and writer behind The Quiet Seed. With a background in mindfulness practices and a passion for thoughtful writing, I started this blog as a way to share my journey toward a more intentional life.</p>
+<p>When I'm not writing, you can find me tending to my small garden, reading books on slow living, or enjoying a cup of tea while watching the rain. I believe in the power of slowing down and paying attention to the present moment.</p>
+<p>I'm so glad you're here, and I hope The Quiet Seed can be a small sanctuary of calm in your digital day.</p>
+</div>`,
+  lastUpdated: new Date()
+};

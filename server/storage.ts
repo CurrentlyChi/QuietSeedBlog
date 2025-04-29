@@ -4,7 +4,9 @@ import {
   type Post, type InsertPost, 
   type PostWithDetails,
   type SiteSettings,
-  defaultSiteSettings
+  type PageContent, type InsertPageContent,
+  defaultSiteSettings,
+  defaultAboutPageContent
 } from "@shared/schema";
 
 export interface IStorage {
@@ -34,6 +36,10 @@ export interface IStorage {
   // Site settings methods
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings>;
+  
+  // Page content methods
+  getPageContent(id: string): Promise<PageContent | undefined>;
+  updatePageContent(id: string, content: Partial<InsertPageContent>): Promise<PageContent>;
 }
 
 export class MemStorage implements IStorage {
@@ -41,6 +47,7 @@ export class MemStorage implements IStorage {
   private categories: Map<number, Category>;
   private posts: Map<number, Post>;
   private siteSettings: SiteSettings;
+  private pageContents: Map<string, PageContent>;
   
   private userId: number;
   private categoryId: number;
@@ -51,10 +58,14 @@ export class MemStorage implements IStorage {
     this.categories = new Map();
     this.posts = new Map();
     this.siteSettings = { ...defaultSiteSettings };
+    this.pageContents = new Map();
     
     this.userId = 1;
     this.categoryId = 1;
     this.postId = 1;
+    
+    // Initialize the about page content
+    this.pageContents.set('about', { ...defaultAboutPageContent });
     
     this.seedData();
   }
@@ -277,6 +288,29 @@ export class MemStorage implements IStorage {
         post.excerpt.toLowerCase().includes(lowerQuery)
       )
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  }
+  
+  // Page content methods
+  async getPageContent(id: string): Promise<PageContent | undefined> {
+    return this.pageContents.get(id);
+  }
+  
+  async updatePageContent(id: string, content: Partial<InsertPageContent>): Promise<PageContent> {
+    const existingContent = this.pageContents.get(id) || { 
+      id, 
+      title: id.charAt(0).toUpperCase() + id.slice(1), 
+      content: '', 
+      lastUpdated: new Date() 
+    };
+    
+    const updatedContent: PageContent = {
+      ...existingContent,
+      ...content,
+      lastUpdated: new Date()
+    };
+    
+    this.pageContents.set(id, updatedContent);
+    return updatedContent;
   }
 
   // Seed initial data

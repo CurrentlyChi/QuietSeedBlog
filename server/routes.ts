@@ -182,6 +182,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Failed to update site settings" });
     }
   });
+  
+  // Page content routes
+  app.get("/api/pages/:id", async (req: Request, res: Response) => {
+    try {
+      const pageId = req.params.id;
+      const pageContent = await storage.getPageContent(pageId);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: `Page content for '${pageId}' not found` });
+      }
+      
+      return res.json(pageContent);
+    } catch (error) {
+      console.error("Error fetching page content:", error);
+      return res.status(500).json({ message: "Failed to fetch page content" });
+    }
+  });
+  
+  app.put("/api/pages/:id", async (req: Request, res: Response) => {
+    try {
+      const pageId = req.params.id;
+      console.log(`Updating page ${pageId} with content:`, req.body);
+      
+      // Basic validation
+      if (!req.body || typeof req.body.content !== 'string') {
+        return res.status(400).json({ 
+          message: "Invalid page content. Content field must be a string." 
+        });
+      }
+      
+      const updatedContent = await storage.updatePageContent(pageId, req.body);
+      console.log(`Page ${pageId} updated successfully`);
+      
+      return res.json(updatedContent);
+    } catch (error) {
+      console.error("Error updating page content:", error);
+      return res.status(500).json({ message: "Failed to update page content" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
