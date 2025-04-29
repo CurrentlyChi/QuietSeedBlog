@@ -12,10 +12,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDate } from "@/lib/utils";
-import { loginSchema, type SiteSettings, type PageContent, type InsertPageContent } from "@shared/schema";
+import { loginSchema, type SiteSettings, type PageContent, type InsertPageContent, User } from "@shared/schema";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
@@ -303,6 +304,7 @@ export default function Admin() {
           <TabsTrigger value="posts">Posts</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
           <TabsTrigger value="settings">Site Settings</TabsTrigger>
+          <TabsTrigger value="account">Account Settings</TabsTrigger>
         </TabsList>
         
         <TabsContent value="posts">
@@ -480,7 +482,173 @@ export default function Admin() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="account">
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Settings</CardTitle>
+              <CardDescription>
+                Update your admin credentials
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AccountSettingsForm userId={userData.user.id} />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+// Account settings form component
+function AccountSettingsForm({ userId }: { userId: number }) {
+  const { toast } = useToast();
+
+  // Create user update schema
+  const userUpdateSchema = z.object({
+    username: z.string().min(3, {
+      message: "Username must be at least 3 characters.",
+    }).optional(),
+    password: z.string().min(6, {
+      message: "Password must be at least 6 characters.",
+    }).optional(),
+    name: z.string().min(2, {
+      message: "Name must be at least 2 characters.",
+    }).optional(),
+  });
+
+  type UserUpdateFormValues = z.infer<typeof userUpdateSchema>;
+
+  // Form setup
+  const form = useForm<UserUpdateFormValues>({
+    resolver: zodResolver(userUpdateSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      name: "",
+    },
+  });
+
+  // Mutation for updating user
+  const updateUserMutation = useMutation({
+    mutationFn: async (data: UserUpdateFormValues) => {
+      const res = await apiRequest("PUT", `/api/user/${userId}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      // Clear form
+      form.reset({
+        username: "",
+        password: "",
+        name: "",
+      });
+      
+      // Show success message
+      toast({
+        title: "Account updated",
+        description: "Your credentials have been successfully updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update account settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (values: UserUpdateFormValues) => {
+    // Ensure at least one field is filled
+    if (!values.username && !values.password && !values.name) {
+      toast({
+        title: "Update failed",
+        description: "You must fill in at least one field to update",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    await updateUserMutation.mutateAsync(values);
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormDescription>
+                Enter a new username if you want to change it
+              </FormDescription>
+              <FormControl>
+                <Input 
+                  placeholder="New username" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormDescription>
+                Enter a new password if you want to change it
+              </FormDescription>
+              <FormControl>
+                <Input 
+                  type="password" 
+                  placeholder="New password" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Display Name</FormLabel>
+              <FormDescription>
+                This name will be displayed as the author of your posts
+              </FormDescription>
+              <FormControl>
+                <Input 
+                  placeholder="Your display name" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="flex justify-between items-center">
+          <p className="text-xs text-muted-foreground">
+            Leave fields blank if you don't want to change them
+          </p>
+          <Button 
+            type="submit" 
+            disabled={updateUserMutation.isPending}
+          >
+            {updateUserMutation.isPending ? "Updating..." : "Update Account"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
