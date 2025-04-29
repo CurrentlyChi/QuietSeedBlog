@@ -34,23 +34,17 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 
-// Create a form schema
-const formSchema = insertPostSchema.extend({
-  // Ensure featured is always a boolean
-  featured: z.preprocess(
-    (val) => {
-      if (typeof val === 'string') {
-        return val === "true";
-      }
-      return Boolean(val);
-    },
-    z.boolean()
-  ),
-  // Accept either a string (ISO format) or a Date object for publishedAt
-  publishedAt: z.union([
-    z.string().transform(val => new Date(val)),
-    z.date()
-  ])
+// Create a simplified form schema that doesn't transform date, just validates presence
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  slug: z.string().min(1, "Slug is required"),
+  content: z.string().min(1, "Content is required"),
+  excerpt: z.string().min(1, "Excerpt is required"),
+  publishedAt: z.string().min(1, "Publish date is required"),
+  imageUrl: z.string().optional().nullable(),
+  categoryId: z.number().int().positive(),
+  authorId: z.number().int().positive(),
+  featured: z.boolean().default(false),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -72,7 +66,7 @@ const EditPost = () => {
       slug: "",
       excerpt: "",
       imageUrl: "",
-      publishedAt: new Date(),
+      publishedAt: new Date().toISOString(), // Use ISO string for date
       categoryId: 1, // Reflection category
       authorId: 1, // Admin user
       featured: false, // Boolean value
@@ -140,19 +134,21 @@ const EditPost = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    // Ensure publishedAt is always a Date object
+    // Since our schema now works with strings for dates, we just need to ensure the values
+    // are properly formatted
     const processedValues = {
       ...values,
-      publishedAt: values.publishedAt instanceof Date 
+      // For publishedAt, make sure it's a valid string
+      publishedAt: typeof values.publishedAt === 'string' 
         ? values.publishedAt 
-        : new Date(values.publishedAt || new Date()),
-      featured: !!values.featured // Ensure boolean
+        : new Date().toISOString(),
+      // Ensure featured is a boolean
+      featured: !!values.featured
     };
     
     // Log the values to help with debugging
     console.log("Form values before submission:", processedValues);
     console.log("publishedAt type:", typeof processedValues.publishedAt);
-    console.log("publishedAt is date?", processedValues.publishedAt instanceof Date);
     
     try {
       if (isEditMode && postId) {
@@ -267,14 +263,14 @@ const EditPost = () => {
                       <FormControl>
                         <Input 
                           type="datetime-local" 
-                          value={field.value instanceof Date 
-                            ? field.value.toISOString().slice(0, 16) 
-                            : typeof field.value === 'string' 
+                          value={
+                            typeof field.value === 'string' 
                               ? new Date(field.value).toISOString().slice(0, 16)
-                              : new Date().toISOString().slice(0, 16)}
+                              : new Date().toISOString().slice(0, 16)
+                          }
                           onChange={(e) => {
-                            const date = new Date(e.target.value);
-                            field.onChange(date);
+                            // Just store the ISO string
+                            field.onChange(new Date(e.target.value).toISOString());
                           }}
                         />
                       </FormControl>
