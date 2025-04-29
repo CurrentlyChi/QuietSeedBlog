@@ -79,30 +79,30 @@ export default function Header() {
         <nav className="hidden md:flex items-center space-x-5 ml-auto animate-fade-in">
           <Link 
             href="/" 
-            className="nav-link text-white hover:text-yellow-200 transition-colors text-base font-semibold"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
           >
             HOME
           </Link>
           <Link 
             href="/" 
-            className="nav-link bg-yellow-400 text-blue-800 font-semibold px-4 py-2 rounded-md shadow-md hover:bg-yellow-300 transition-colors text-base border border-blue-400"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
           >
             BLOG
           </Link>
           <Link 
             href="/about" 
-            className="nav-link text-white hover:text-yellow-200 transition-colors text-base font-semibold"
+            className="nav-link text-white hover:text-yellow-200 transition-colors text-sm font-semibold"
           >
             ABOUT
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="bg-white text-blue-800 hover:bg-yellow-100 transition-colors flex items-center px-3 py-2 rounded-md shadow-md border border-blue-400"
+            className="text-white hover:text-yellow-200 transition-colors flex items-center text-sm font-semibold"
             aria-label="Search"
           >
-            <SearchIcon className="h-5 w-5" />
-            <span className="ml-1 text-base font-semibold">SEARCH</span>
+            <SearchIcon className="h-4 w-4 mr-1" />
+            <span>SEARCH</span>
           </button>
           
           {isSearchOpen && (
@@ -132,20 +132,20 @@ export default function Header() {
           {userData?.isAuthenticated ? (
             <>
               {userData.user.isAdmin && (
-                <Link href="/admin">
-                  <Button className="bg-blue-800 text-white font-semibold px-3 py-2 text-base rounded-md shadow-md hover:bg-blue-700 transition-colors border border-blue-400">ADMIN</Button>
+                <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold">
+                  ADMIN
                 </Link>
               )}
-              <Button 
-                className="bg-red-600 text-white font-semibold px-3 py-2 text-base rounded-md shadow-md hover:bg-red-700 transition-colors border border-blue-400" 
+              <button 
+                className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold" 
                 onClick={handleLogout}
               >
                 LOGOUT
-              </Button>
+              </button>
             </>
           ) : (
-            <Link href="/admin">
-              <Button className="bg-blue-800 text-white font-semibold px-4 py-2 text-base rounded-md shadow-md hover:bg-blue-700 transition-colors border border-blue-400">LOGIN</Button>
+            <Link href="/admin" className="text-white hover:text-yellow-200 transition-colors text-sm font-semibold">
+              LOGIN
             </Link>
           )}
         </nav>
@@ -156,48 +156,48 @@ export default function Header() {
         <div className="container mx-auto px-4 flex flex-col space-y-4">
           <Link 
             href="/" 
-            className="text-white hover:text-yellow-200 pb-2 border-b border-blue-400 font-semibold text-base flex justify-center"
+            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
           >
             HOME
           </Link>
           <Link 
             href="/" 
-            className="bg-yellow-400 text-blue-800 font-semibold py-2 px-4 rounded-md w-full flex justify-center shadow-md border border-blue-400 text-base"
+            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
           >
             BLOG
           </Link>
           <Link 
             href="/about" 
-            className="text-white hover:text-yellow-200 pb-2 border-b border-blue-400 font-semibold text-base flex justify-center"
+            className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
           >
             ABOUT
           </Link>
           
           <button 
             onClick={openSearch} 
-            className="flex items-center justify-center space-x-2 bg-white text-blue-800 py-2 px-4 rounded-md w-full transition-colors shadow-md font-semibold text-base border border-blue-400"
+            className="flex items-center justify-center text-white hover:text-yellow-200 font-semibold text-sm"
           >
-            <SearchIcon className="h-5 w-5" />
+            <SearchIcon className="h-4 w-4 mr-1" />
             <span>SEARCH</span>
           </button>
           
           {userData?.isAuthenticated ? (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-4">
               {userData.user.isAdmin && (
-                <Link href="/admin">
-                  <Button className="w-full bg-blue-800 text-white font-semibold py-2 text-base rounded-md shadow-md hover:bg-blue-700 transition-colors border border-blue-400">ADMIN DASHBOARD</Button>
+                <Link href="/admin" className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center">
+                  ADMIN DASHBOARD
                 </Link>
               )}
-              <Button 
-                className="w-full bg-red-600 text-white font-semibold py-2 text-base rounded-md shadow-md hover:bg-red-700 transition-colors border border-blue-400"
+              <button 
+                className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center"
                 onClick={handleLogout}
               >
                 LOGOUT
-              </Button>
+              </button>
             </div>
           ) : (
-            <Link href="/admin">
-              <Button className="w-full bg-blue-800 text-white font-semibold py-2 text-base rounded-md shadow-md hover:bg-blue-700 transition-colors border border-blue-400">LOGIN</Button>
+            <Link href="/admin" className="text-white hover:text-yellow-200 font-semibold text-sm flex justify-center">
+              LOGIN
             </Link>
           )}
         </div>
