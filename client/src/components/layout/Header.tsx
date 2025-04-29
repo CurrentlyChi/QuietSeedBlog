@@ -85,9 +85,9 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className="nav-link bg-green-500 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-green-600 transition-colors border-2 border-yellow-400 animate-pulse-scale"
+            className="nav-link bg-primary text-white font-medium px-4 py-2 rounded-md shadow-sm hover:bg-primary/90 transition-colors"
           >
-            BLOG
+            Blog
           </Link>
           <Link 
             href="/about" 
@@ -98,11 +98,10 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="bg-red-600 text-white transition-colors flex items-center p-3 rounded-lg shadow-lg relative animate-pulse-scale border-2 border-yellow-400"
+            className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center p-2 rounded-lg"
             aria-label="Search"
           >
-            <SearchIcon className="h-8 w-8" />
-            <span className="absolute -top-3 -right-3 bg-yellow-400 text-red-600 text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-red-600 shadow-md">!</span>
+            <SearchIcon className="h-5 w-5" />
           </button>
           
           {isSearchOpen && (
@@ -163,9 +162,9 @@ export default function Header() {
           </Link>
           <Link 
             href="/" 
-            className="bg-green-500 text-white font-bold text-xl py-3 px-6 rounded-md w-full flex justify-center shadow-md border-2 border-yellow-400 animate-pulse-scale"
+            className="bg-primary text-white font-medium py-2 px-4 rounded-md w-full flex justify-center"
           >
-            BLOG
+            Blog
           </Link>
           <Link 
             href="/about" 
@@ -176,11 +175,10 @@ export default function Header() {
           
           <button 
             onClick={openSearch} 
-            className="flex items-center justify-center space-x-3 bg-red-600 text-white p-4 rounded-md w-full transition-colors shadow-lg relative animate-bounce-attention border-2 border-yellow-400"
+            className="flex items-center justify-center space-x-2 bg-primary/10 text-primary p-3 rounded-md w-full transition-colors"
           >
-            <SearchIcon className="h-7 w-7" />
-            <span className="font-bold text-xl">SEARCH HERE</span>
-            <span className="absolute -top-3 -right-3 bg-yellow-400 text-red-600 text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center border-2 border-red-600 shadow-md">!</span>
+            <SearchIcon className="h-5 w-5" />
+            <span>Search</span>
           </button>
           
           {userData?.isAuthenticated ? (
