@@ -2,7 +2,6 @@ import { useRoute, Link } from "wouter";
 import { usePost } from "@/lib/hooks";
 import { formatDate, getReadingTime } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import Newsletter from "@/components/home/Newsletter";
 
 export default function BlogPost() {
   const [, params] = useRoute("/post/:slug");
@@ -93,8 +92,6 @@ export default function BlogPost() {
           </Link>
         </div>
       </div>
-      
-      <Newsletter />
     </div>
   );
 }

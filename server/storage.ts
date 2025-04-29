@@ -185,8 +185,8 @@ export class MemStorage implements IStorage {
 
     return {
       ...post,
-      categoryName: "Uncategorized", // Default value since categories are removed
-      categorySlug: "uncategorized", // Default value
+      categoryName: "", // Empty instead of Uncategorized
+      categorySlug: "", // Empty instead of uncategorized
       authorName: author.name
     };
   }
@@ -461,8 +461,8 @@ export class DatabaseStorage implements IStorage {
     
     return {
       ...post,
-      categoryName: "Uncategorized", // Default value since categories are removed
-      categorySlug: "uncategorized", // Default value
+      categoryName: "", // Empty instead of Uncategorized
+      categorySlug: "", // Empty instead of uncategorized
       authorName: author.name
     };
   }
